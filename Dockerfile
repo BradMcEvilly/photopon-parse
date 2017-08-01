@@ -1,21 +1,26 @@
-FROM node:boron
+FROM node:latest
 
-RUN mkdir -p /parse-server
-COPY ./ /parse-server/
+RUN mkdir parse
 
-RUN mkdir -p /parse-server/config
-VOLUME /parse-server/config
+ADD . /parse
+WORKDIR /parse
+RUN npm install
 
-RUN mkdir -p /parse-server/cloud
-VOLUME /parse-server/cloud
+ENV APP_ID setYourAppId
+ENV MASTER_KEY setYourMasterKey
+ENV DATABASE_URI setMongoDBURI
 
-WORKDIR /parse-server
+# Optional (default : 'parse/cloud/main.js')
+# ENV CLOUD_CODE_MAIN cloudCodePath
 
-RUN npm install && \
-    npm run build
+# Optional (default : '/parse')
+# ENV PARSE_MOUNT mountPath
 
-ENV PORT=1337
+EXPOSE 1337
 
-EXPOSE $PORT
+# Uncomment if you want to access cloud code outside of your container
+# A main.js file must be present, if not Parse will not start
 
-ENTRYPOINT ["npm", "start", "--"]
+# VOLUME /parse/cloud               
+
+CMD [ "npm", "start" ]
