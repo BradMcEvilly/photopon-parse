@@ -328,7 +328,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-
+	console.log(request);
 	request.object.set("creator", request.user);
 	request.object.set("installationId", request.installationId);
 
