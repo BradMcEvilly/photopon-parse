@@ -6,6 +6,32 @@ function pretty(object) {
 
 }
 
+
+ParseClient = {}
+
+
+ParseClient.getCoupon = function(id){
+
+	var promise = new Parse.Promise();
+
+    var Coupon = Parse.Object.extend("Coupon");
+    var query = new Parse.Query(Coupon);
+    query.equalTo("objectId",id);
+    query.first().then(function(result){
+        if(result){
+            // If result was defined, the object with this objectID was found
+            promise.resolve(result);
+        } else {
+            promise.resolve(null);
+        }
+    }, function(error){
+            promise.error(error);
+    });
+
+    return promise;
+}
+
+
 ///
 
 
@@ -339,44 +365,76 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-	request.log.info( pretty(request));
-	request.object.set("creator", request.user);
-	request.object.set("installationId", request.installationId);
 
-    var groupACL = new Parse.ACL();
-    groupACL.setPublicReadAccess(true);
-    groupACL.setWriteAccess(request.user, true);
-    request.object.setACL(groupACL);
- 	
-	request.user.set("lastPhotopon", new Date());
-
-
-	var PerUserShareClass = Parse.Object.extend("PerUserShare");
-
-	var friends = request.object.get("users");
-
-	for (var i = 0; i < friends.length; i++) {
-		var friend = new Parse.User();
-		friend.id = friends[i];
-			
-		var sh = new PerUserShareClass();
-
-		sh.set("user", request.user);
-		sh.set("coupon", request.object.get("coupon"));
-		sh.set("friend", friend);
-
-		sh.save();
+	if(!request.user){
+	
+		return response.error("User is not defined");
 	}
+	
+	if(!request.object.get("coupon")){
+	
+		return response.error("CouponId is required");
+	
+	}else{
+	
+		var couponID = request.object.get("coupon");
+		var CouponClass = Parse.Object.extend("Coupon");
+		
+		ParseClient.getCoupon(couponID).then(function(coupon){
+			if(coupon){
+			
+				request.object.set("creator", request.user);
+				request.object.set("installationId", request.installationId);
+
+				var groupACL = new Parse.ACL();
+				groupACL.setPublicReadAccess(true);
+				groupACL.setWriteAccess(request.user, true);
+				request.object.setACL(groupACL);
+	
+				request.user.set("lastPhotopon", new Date());
+
+				var PerUserShareClass = Parse.Object.extend("PerUserShare");
+
+				var friends = request.object.get("users");
+				if(friends){
+					for (var i = 0; i < friends.length; i++) {
+						var friend = new Parse.User();
+			
+			
+						friend.id = friends[i];
+			
+						var sh = new PerUserShareClass();
+
+						sh.set("user", request.user);
+						sh.set("coupon", request.object.get("coupon"));
+						sh.set("friend", friend);
+
+						sh.save();
+					}
+				}
 
 
-	request.user.save(null, {
-		success: function(user) {
-			response.success();
+				request.user.save(null, {
+					success: function(user) {
+						response.success();
+					},
+					error: function(user, error) {
+						response.error();
+					}
+				});
+			
+			
+			}else{
+			
+				response.error("Coupon does't exist");
+			
+			}
+		
 		},
-		error: function(user, error) {
-			response.error();
-		}
-	});
+		function(error){
+			response.error(error);
+		});
+	}
 	
 });
 
