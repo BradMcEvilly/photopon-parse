@@ -1,3 +1,14 @@
+///Custom Functions
+
+function pretty(object) {
+
+	return JSON.stringify(object, null, 2);
+
+}
+
+///
+
+
 Parse.Cloud.define("getUserSessionToken", function(request, response) {
 
     //Parse.Cloud.useMasterKey();
@@ -328,8 +339,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-	request.log.info("wewe");
-	request.log.info( JSON.stringify(request, null, 2));
+	request.log.info( pretty(request));
 	request.object.set("creator", request.user);
 	request.object.set("installationId", request.installationId);
 
