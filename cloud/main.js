@@ -368,21 +368,18 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 
 	if(!request.user){
 	
-		return response.error("User is not defined");
-	}
+		response.error("User is not defined");
+	}else if(!request.object.get("coupon")){
 	
-	if(!request.object.get("coupon")){
-	
-		return response.error("CouponId is required");
+		 response.error("CouponId is required");
 	
 	}else{
 	
 		var couponID = request.object.get("coupon");
-		var CouponClass = Parse.Object.extend("Coupon");
 		
 		ParseClient.getCoupon(couponID).then(function(coupon){
 			if(coupon){
-			
+				request.log.info( pretty(coupon));
 				request.object.set("creator", request.user);
 				request.object.set("installationId", request.installationId);
 
