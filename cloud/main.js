@@ -376,7 +376,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	}else{
 	
 		var couponID = request.object.get("coupon").objectId;
-		
+		request.log.info( couponID);
 		ParseClient.getCoupon(couponID).then(function(coupon){
 			if(coupon){
 				request.log.info( pretty(coupon));
@@ -423,7 +423,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 			
 			}else{
 			
-				response.error("Coupon does't exist");
+				response.error("Coupon doesn't exist");
 			
 			}
 		
