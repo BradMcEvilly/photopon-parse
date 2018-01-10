@@ -472,7 +472,7 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			}
 
 
-			/*Parse.Push.send({
+			Parse.Push.send({
 				channels: [ channelName ],
 				data: {
 					type: notificationType,
@@ -481,13 +481,14 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 					alert: message
 				}
 			}, {
+				useMasterKey: true,
 				success: function() {
 
 				},
 				error: function(error) {
 				// Handle error
 				}
-			});*/
+			});
 
 
 		},
