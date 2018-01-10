@@ -435,7 +435,7 @@ Parse.Cloud.afterSave("Photopon", function(request) {
 	request.log.info( pretty(request));
 	//if(!request.user){
 		request.user.set("lastPhotopon", new Date());
-		request.user.save()
+		request.user.save(null, {useMasterKey: true});
 	//}
 	
 });
