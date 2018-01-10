@@ -388,7 +388,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 				groupACL.setWriteAccess(request.user, true);
 				request.object.setACL(groupACL);
 	
-				request.user.set("lastPhotopon", new Date());
+				//request.user.set("lastPhotopon", new Date());
 
 				var PerUserShareClass = Parse.Object.extend("PerUserShare");
 
