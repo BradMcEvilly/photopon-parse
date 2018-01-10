@@ -410,15 +410,8 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 					}
 				}
 
-
-				request.user.save(null, {
-					success: function(user) {
-						response.success();
-					},
-					error: function(user, error) {
-						response.error();
-					}
-				});
+				response.success();
+				
 			
 			
 			}else{
@@ -431,6 +424,18 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 		function(error){
 			response.error(error);
 		});
+	}
+	
+});
+
+
+Parse.Cloud.afterSave("Photopon", function(request, response) {
+
+
+
+	if(!request.user){
+		request.user.set("lastPhotopon", new Date());
+		request.user.save()
 	}
 	
 });
