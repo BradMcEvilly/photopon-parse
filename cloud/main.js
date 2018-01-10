@@ -429,14 +429,14 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 });
 
 
-Parse.Cloud.afterSave("Photopon", function(request, response) {
+Parse.Cloud.afterSave("Photopon", function(request) {
 
 
-
-	if(!request.user){
+	request.log.info( pretty(request));
+	//if(!request.user){
 		request.user.set("lastPhotopon", new Date());
 		request.user.save()
-	}
+	//}
 	
 });
 
