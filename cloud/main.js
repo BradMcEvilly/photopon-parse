@@ -406,7 +406,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 						sh.set("coupon", request.object.get("coupon"));
 						sh.set("friend", friend);
 
-						sh.save();
+						sh.save(null,{useMasterKey: true});
 					}
 				}
 
