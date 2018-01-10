@@ -375,8 +375,8 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
 	}else{
 	
-		var couponID = request.object.get("coupon").objectId;
-		request.log.info( couponID);
+		var couponID = request.object.get("coupon");
+		request.log.info( pretty(couponID));
 		ParseClient.getCoupon(couponID).then(function(coupon){
 			if(coupon){
 				request.log.info( pretty(coupon));
