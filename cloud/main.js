@@ -388,7 +388,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 				groupACL.setWriteAccess(request.user, true);
 				request.object.setACL(groupACL);
 	
-				//request.user.set("lastPhotopon", new Date());
+				request.user.set("lastPhotopon", new Date());
 
 				var PerUserShareClass = Parse.Object.extend("PerUserShare");
 
@@ -410,8 +410,16 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 					}
 				}
 
-				response.success();
-				
+
+				request.user.save(null, {
+					useMasterKey: true,
+					success: function(user) {
+						response.success();
+					},
+					error: function(user, error) {
+						response.error();
+					}
+				});
 			
 			
 			}else{
@@ -425,18 +433,6 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 			response.error(error);
 		});
 	}
-	
-});
-
-
-Parse.Cloud.afterSave("Photopon", function(request) {
-
-
-	request.log.info( pretty(request));
-	//if(!request.user){
-		request.user.set("lastPhotopon", new Date());
-		request.user.save(null, {useMasterKey: true});
-	//}
 	
 });
 
@@ -476,7 +472,7 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			}
 
 
-			Parse.Push.send({
+			/*Parse.Push.send({
 				channels: [ channelName ],
 				data: {
 					type: notificationType,
@@ -491,7 +487,7 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 				error: function(error) {
 				// Handle error
 				}
-			});
+			});*/
 
 
 		},
