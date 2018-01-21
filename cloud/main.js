@@ -400,6 +400,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
  
 		mailgun.messages().sendMime(dataToSend, (sendError, body) => {
 			if (sendError) {
+				request.log.info( pretty(sendError));
 				console.log(sendError);
 				return;
 			}
