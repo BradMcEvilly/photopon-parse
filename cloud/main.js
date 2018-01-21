@@ -389,22 +389,16 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	request.log.info( domain);
 	var mail = new MailComposer(mailOptions);
  
-	mail.compile().build((err, message) => {
- 		request.log.info( pretty(err));
- 		request.log.info( pretty(message));
- 		
-		var dataToSend = {
-			to: 'david@ezrdv,org',
-			message: message.toString('ascii')
-		};
+	var data = {
+	  from: 'Photopon <noreply@photopon.org>',
+	  to: 'david@ezrdv,org',
+	  subject: 'Hello',
+	  text: 'Testing some Mailgun awesomeness!'
+	};
  
-		mailgun.messages().sendMime(dataToSend, (sendError, body) => {
-			if (sendError) {
-				request.log.info( pretty(sendError));
-				console.log(sendError);
-				return;
-			}
-		});
+	mailgun.messages().send(data, function (error, body) {
+		request.log.info( pretty(error));
+	  console.log(body);
 	});
 	
 	
