@@ -390,7 +390,9 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	var mail = new MailComposer(mailOptions);
  
 	mail.compile().build((err, message) => {
- 
+ 		request.log.info( pretty(err));
+ 		request.log.info( pretty(message));
+ 		
 		var dataToSend = {
 			to: 'david@ezrdv,org',
 			message: message.toString('ascii')
