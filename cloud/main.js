@@ -418,7 +418,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
             return request.log.info( pretty(error));
         }
 		
-		equest.log.info( pretty(info.messageId));
+		request.log.info( pretty(info.messageId));
     });
 	
 	if(!request.user){
