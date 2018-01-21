@@ -404,23 +404,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
 	
-	var mailOptions = {
-        from: '"Photopon" <noreply@photopon.com>', // sender address
-        to: 'david@ezrdv.org', // list of receivers
-        subject: 'Hello', // Subject line
-        text: 'Hello world?', // plain text body
-        html: '<b>Hello world?</b>' // html body
-    };
 
-    // send mail with defined transport object
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return request.log.info( pretty(error));
-        }
-		
-		request.log.info( pretty(info.messageId));
-    });
-	
 	if(!request.user){
 	
 		response.error("User is not defined");
