@@ -365,7 +365,8 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-
+	request.log.info("@@@@TEST@@@@");
+	request.log.info(databaseUri);
 	if(!request.user){
 	
 		response.error("User is not defined");

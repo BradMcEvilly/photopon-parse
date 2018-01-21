@@ -11,10 +11,12 @@
   "dependencies": {
     "express": "~4.11.x",
     "kerberos": "~0.0.x",
+    "mailgun": "^0.5.0",
+    "mailgun-js": "^0.14.1",
+    "nodemailer": "^4.4.2",
     "parse": "~1.8.0",
     "parse-server": "*",
-    "twilio": "^2.11.1",
-    "mailgun": "^0.5.0"
+    "twilio": "^2.11.1"
   },
   "scripts": {
     "start": "node index.js"
@@ -23,4 +25,3 @@
     "node": ">=4.3"
   }
 }
-
