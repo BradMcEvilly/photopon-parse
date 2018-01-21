@@ -7,6 +7,27 @@ function pretty(object) {
 }
 
 
+
+//EMAIL
+
+
+var domain = process.env.MAILGUN_DOMAIN;
+var mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_API_KEY, domain: domain });
+var MailComposer = require('nodemailer/lib/mail-composer');
+ 
+var mailOptions = {
+  from: 'noreply@photopon.com',
+  to: 'david@ezrdv.org',
+  subject: 'Test email subject',
+  text: 'Test email text',
+  html: '<b> Test email text </b>'
+};
+ 
+
+
+
+///
+
 ParseClient = {}
 
 
@@ -365,8 +386,25 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-	request.log.info("@@@@TEST@@@@");
-	request.log.info(databaseUri);
+	request.log.info( domain);
+	var mail = new MailComposer(mailOptions);
+ 
+	mail.compile().build((err, message) => {
+ 
+		var dataToSend = {
+			to: 'david@ezrdv,org',
+			message: message.toString('ascii')
+		};
+ 
+		mailgun.messages().sendMime(dataToSend, (sendError, body) => {
+			if (sendError) {
+				console.log(sendError);
+				return;
+			}
+		});
+	});
+	
+	
 	if(!request.user){
 	
 		response.error("User is not defined");
