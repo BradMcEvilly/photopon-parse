@@ -16,6 +16,17 @@ var api_key = process.env.MAILGUN_API_KEY;
 var domain = process.env.MAILGUN_DOMAIN;
 var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
+const nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+        host: process.env.MAILGUN_SMTP_SERVER,
+        port: process.env.MAILGUN_SMTP_PORT,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user:  process.env.MAILGUN_SMTP_LOGIN, // generated ethereal user
+            pass:  process.env.MAILGUN_SMTP_PASSWORD  // generated ethereal password
+        }
+    });
 
 var MailComposer = require('nodemailer/lib/mail-composer');
  
@@ -391,21 +402,24 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-	request.log.info( domain);
-	var mail = new MailComposer(mailOptions);
- 
-	var data = {
-	  from: 'Photopon <noreply@photopon.org>',
-	  to: 'david@ezrdv,org',
-	  subject: 'Hello',
-	  text: 'Testing some Mailgun awesomeness!'
-	};
- 
-	mailgun.messages().send(data, function (error, body) {
-		request.log.info( pretty(error));
-	  console.log(body);
-	});
 	
+	
+	var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>', // sender address
+        to: 'david@ezrdv.org', // list of receivers
+        subject: 'Hello', // Subject line
+        text: 'Hello world?', // plain text body
+        html: '<b>Hello world?</b>' // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return request.log.info( pretty(error));
+        }
+		
+		equest.log.info( pretty(info.messageId));
+    });
 	
 	if(!request.user){
 	
