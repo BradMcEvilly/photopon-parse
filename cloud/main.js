@@ -11,9 +11,15 @@ function pretty(object) {
 //EMAIL
 
 
+
+var api_key = process.env.MAILGUN_API_KEY;
 var domain = process.env.MAILGUN_DOMAIN;
-var mailgun = require('mailgun-js')({ apiKey: process.env.MAILGUN_API_KEY, domain: domain });
+var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
+
+
 var MailComposer = require('nodemailer/lib/mail-composer');
+ 
+ 
  
 var mailOptions = {
   from: 'noreply@photopon.com',
@@ -23,7 +29,6 @@ var mailOptions = {
   html: '<b> Test email text </b>'
 };
  
-
 
 
 ///
