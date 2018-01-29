@@ -31,15 +31,6 @@ var transporter = nodemailer.createTransport({
 var MailComposer = require('nodemailer/lib/mail-composer');
  
  
- 
-var mailOptions = {
-  from: 'noreply@photopon.com',
-  to: 'david@ezrdv.org',
-  subject: 'Test email subject',
-  text: 'Test email text',
-  html: '<b> Test email text </b>'
-};
- 
 var path = require('path');
 var fs = require('fs');
 ///
@@ -329,6 +320,41 @@ Parse.Cloud.define("ServerTime", function(request, response) {
 });
 
 Parse.Cloud.afterSave("MerchantRequests", function(request) {
+	
+	if(!request.object.existed()){
+		
+		var promocode = request.object.get("promo")
+		if(promocode){
+		
+			var promise = new Parse.Promise();
+
+			var Representative = Parse.Object.extend("Representative");
+			var query = new Parse.Query(Representative);
+			query.equalTo("repID",promocode);
+			query.first().then(function(result){
+				if(result){
+					var mailOptions = {
+						from: '"Photopon" <noreply@photopon.com>', // sender address
+						to: 'david@ezrdv.org', // list of receivers
+						subject: 'New Merchant Request Received', // Subject line
+						html: 'You just received a new request from '+request.object.get("buusinessName") // html body
+					};
+					// send mail with defined transport object
+					transporter.sendMail(mailOptions, (error, info) => {
+						
+					});
+			
+				} else {
+		   
+				}
+			}, function(error){
+			
+			});
+		
+		}
+	
+	}
+
 
 	if (request.object.get("isAccepted")) {
 		//Parse.Cloud.useMasterKey();
