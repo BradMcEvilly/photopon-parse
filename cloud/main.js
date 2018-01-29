@@ -331,13 +331,13 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
-			query.first().then(function(result){
-				if(result){
+			query.first({ useMasterKey:true }).then(function(result){
+				if(result && result.get("email")){
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
-						to: 'david@ezrdv.org', // list of receivers
+						to: result.get("email"), // list of receivers
 						subject: 'New Merchant Request Received', // Subject line
-						html: 'You just received a new request from '+request.object.get("buusinessName") // html body
+						html: 'You just received a new request from '+request.object.get("businessName")+" for referral "+result.get("firstName") // html body
 					};
 					// send mail with defined transport object
 					transporter.sendMail(mailOptions, (error, info) => {
