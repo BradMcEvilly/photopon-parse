@@ -45,7 +45,7 @@ ParseClient.getCoupon = function(id){
     var Coupon = Parse.Object.extend("Coupon");
     var query = new Parse.Query(Coupon);
     query.equalTo("objectId",id);
-    query.first().then(function(result){
+    query.first({useMasterKey: true}).then(function(result){
         if(result){
             // If result was defined, the object with this objectID was found
             promise.resolve(result);
@@ -59,6 +59,27 @@ ParseClient.getCoupon = function(id){
     return promise;
 }
 
+
+ParseClient.getSuperUsers = function(){
+
+	var promise = new Parse.Promise();
+
+    var Coupon = Parse.Object.extend("User");
+    var query = new Parse.Query(User);
+    query.equalTo("isSupeUser",true);
+    query.find({useMasterKey: true}).then(function(results){
+        if(results && results.length > 0){
+            // If result was defined, the object with this objectID was found
+            promise.resolve(results);
+        } else {
+            promise.resolve(null);
+        }
+    }, function(error){
+            promise.error(error);
+    });
+
+    return promise;
+}
 
 ///
 
@@ -324,9 +345,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 	if(!request.object.existed()){
 		
 		var promocode = request.object.get("promo")
-		if(promocode){
-		
-			
+		if(promocode){	
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
@@ -364,7 +383,57 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 
 });
 
+Parse.Cloud.afterSave("Coupon", function(request) {
+	
+	if(!request.object.existed()){
+		
+		var user = request.object.get("owner")
+		if(user){	
+			var MerchantRequests = Parse.Object.extend("MerchantRequests");
+			var query = new Parse.Query(MerchantRequests);
+			query.equalTo("user",user);
+			query.first({ useMasterKey:true }).then(function(result){
+				if(result && result.get("email")){
+					var mailOptions = {
+						from: '"Photopon" <noreply@photopon.com>', // sender address
+						to: "david@ezrdv.org",//result.get("email"), // list of receivers
+						subject: 'New Coupon Added '+result.get("email"), // Subject line
+						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
+					};
+					transporter.sendMail(mailOptions, (error, info) => {});
+					
+					ParseClient.getSuperUsers().then(function(users){
+						if(users){
+							for(int i = 0; i<results.length, i++){
+								mailOptions.to ="david@ezrdv.org";
+								mailOptions.subject ='New Coupon Added '+results[i].get('email');
+								transporter.sendMail(mailOptions, (error, info) => {});
+							}
+						}
+				});
+					
+					
+			
+				} else {
+		   
+				}
+			}, function(error){
+			
+			});
+		
+		}
+	
+	}
 
+
+	if (request.object.get("isAccepted")) {
+		//Parse.Cloud.useMasterKey();
+		request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
+		request.object.get("user", {useMasterKey: true}).save({useMasterKey: true});
+		request.object.destroy({useMasterKey: true});
+	}
+
+});
 
 Parse.Cloud.beforeSave("Verifications", function(request, response) {
 	var numTried = request.object.get("numTried") || 0;
