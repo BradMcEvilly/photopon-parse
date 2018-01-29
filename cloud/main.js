@@ -411,6 +411,8 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 								transporter.sendMail(mailOptions, (error, info) => {});
 							}
 						}
+					},function(error){
+						request.log.info( pretty(error));
 					});
 					
 					
