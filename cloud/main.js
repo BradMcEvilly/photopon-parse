@@ -404,13 +404,13 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 					
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
-							for(int i = 0; i<results.length, i++){
+							for( var i = 0; i<results.length; i++){
 								mailOptions.to ="david@ezrdv.org";
 								mailOptions.subject ='New Coupon Added '+results[i].get('email');
 								transporter.sendMail(mailOptions, (error, info) => {});
 							}
 						}
-				});
+					});
 					
 					
 			
