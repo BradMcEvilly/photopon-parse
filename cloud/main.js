@@ -397,24 +397,23 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 			response.error(error);
 		}
 	});
-
 });
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
 	Parse.Push.send({
-				channels: [ "User_Zo9waIMtON"],
+				channels: [ "User_ewewe" ],
 				data: {
-					type: "PHOTOPON",
+					type: "TEST",
 					notificationId: request.object.id,
 					badge: "Increment",
-					alert: "Test"
+					alert: message
 				}
 			}, {
 				useMasterKey: true,
 				success: function() {
-					request.log.info( pretty("success"));
+					request.log.info( "sucess");
 				},
 				error: function(error) {
 					request.log.info( pretty(error));
@@ -524,6 +523,9 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			} else if (notificationType == "REDEEMED") {
 				message = assocUser.get("username") + " redeemed your Photopon";
 
+			} else if (notificationType == "VIEWED") {
+				message = assocUser.get("username") + " viewed your Photopon";
+				
 			}
 
 
