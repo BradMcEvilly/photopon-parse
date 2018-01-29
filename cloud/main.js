@@ -406,7 +406,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	Parse.Push.send({
 				channels: [ "User_Zo9waIMtON"],
 				data: {
-					type: notificationType,
+					type: "PHOTOPON",
 					notificationId: request.object.id,
 					badge: "Increment",
 					alert: "Test"
