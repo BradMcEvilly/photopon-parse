@@ -358,8 +358,8 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', 
 						subject: 'New Merchant Request Received', 
-						text: 'You just received a new request from '+request.object.get("businessName")+""+((result)?" (representative: "+result.get("firstName")+")":"")
-						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result)?" (representative: "+result.get("firstName")+")":"")
+						text: 'You just received a new request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
+						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
 					};
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
@@ -421,7 +421,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', 
 						subject: 'New Coupon Added',
-						text: ''+result.get("businessName")+' just added a new Coupon'
+						text: ''+result.get("businessName")+' just added a new Coupon',
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon'
 					};
 					ParseClient.getSuperUsers().then(function(users){
