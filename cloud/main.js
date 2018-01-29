@@ -66,7 +66,7 @@ ParseClient.getSuperUsers = function(){
 
     var Coupon = Parse.Object.extend("User");
     var query = new Parse.Query(User);
-    query.equalTo("isSupeUser",true);
+    query.equalTo("isSuperUser",true);
     query.find({useMasterKey: true}).then(function(results){
         if(results && results.length > 0){
             // If result was defined, the object with this objectID was found
