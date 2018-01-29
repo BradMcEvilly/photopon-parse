@@ -393,7 +393,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 			var query = new Parse.Query(MerchantRequests);
 			query.equalTo("user",user);
 			query.first({ useMasterKey:true }).then(function(result){
-			
+				request.log.info( pretty(result));
 				if(result){
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
