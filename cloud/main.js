@@ -403,23 +403,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
-	Parse.Push.send({
-				channels: [ "User_Zo9waIMtON"],
-				data: {
-					type: "PHOTOPON",
-					notificationId: request.object.id,
-					badge: "Increment",
-					alert: "Test"
-				}
-			}, {
-				useMasterKey: true,
-				success: function() {
-					request.log.info( pretty("success"));
-				},
-				error: function(error) {
-					request.log.info( pretty(error));
-				}
-			});
+	
 
 	if(!request.user){
 	
