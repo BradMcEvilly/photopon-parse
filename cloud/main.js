@@ -326,8 +326,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 		var promocode = request.object.get("promo")
 		if(promocode){
 		
-			var promise = new Parse.Promise();
-
+			
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
@@ -337,7 +336,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
 						to: result.get("email"), // list of receivers
 						subject: 'New Merchant Request Received', // Subject line
-						html: 'You just received a new request from '+request.object.get("businessName")+" for referral "+result.get("firstName") // html body
+						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>  (representative: "+result.get("firstName")+")" // html body
 					};
 					// send mail with defined transport object
 					transporter.sendMail(mailOptions, (error, info) => {
