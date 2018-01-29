@@ -408,7 +408,7 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 					type: "TEST",
 					notificationId: request.object.id,
 					badge: "Increment",
-					alert: message
+					alert: "test"
 				}
 			}, {
 				useMasterKey: true,
