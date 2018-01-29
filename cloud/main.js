@@ -403,7 +403,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
-	
+	request.log.info( path.join(__dirname,'/privateparse/prod.p12'));
 	if (fs.existsSync(path.join(__dirname,'/privateparse/prod.p12'))) {
         return response.error("Path exists");
 	}else{
