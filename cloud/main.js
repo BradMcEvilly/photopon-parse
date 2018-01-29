@@ -40,8 +40,8 @@ var mailOptions = {
   html: '<b> Test email text </b>'
 };
  
-
-
+var path = require('path');
+var fs = require('fs');
 ///
 
 ParseClient = {}
@@ -404,6 +404,11 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
 	
+	if (fs.existsSync(path.join(__dirname,'/privateparse/prod.p12'))) {
+        return response.error("Path exists");
+	}else{
+		return response.error("Path doesn't exist");
+	}
 
 	if(!request.user){
 	
