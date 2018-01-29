@@ -393,14 +393,14 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 			var query = new Parse.Query(MerchantRequests);
 			query.equalTo("user",user);
 			query.first({ useMasterKey:true }).then(function(result){
-				if(result && result.get("email")){
+			
+				if(result){
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
 						to: "david@ezrdv.org",//result.get("email"), // list of receivers
 						subject: 'New Coupon Added '+result.get("email"), // Subject line
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
 					};
-					transporter.sendMail(mailOptions, (error, info) => {});
 					
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
@@ -496,23 +496,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	
-	Parse.Push.send({
-				channels: [ "User_ewewe" ],
-				data: {
-					type: "TEST",
-					notificationId: request.object.id,
-					badge: "Increment",
-					alert: "test"
-				}
-			}, {
-				useMasterKey: true,
-				success: function() {
-					request.log.info( "sucess");
-				},
-				error: function(error) {
-					request.log.info( pretty(error));
-				}
-			});
+	
 
 	if(!request.user){
 	
