@@ -64,7 +64,7 @@ ParseClient.getSuperUsers = function(request){
 
 	var promise = new Parse.Promise();
 
-    var Coupon = Parse.Object.extend("User");
+    var User = Parse.Object.extend("User");
     var query = new Parse.Query(User);
     query.equalTo("isSuperUser",true);
     query.find({useMasterKey: true}).then(function(results){
