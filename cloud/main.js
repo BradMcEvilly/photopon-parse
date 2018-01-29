@@ -60,14 +60,13 @@ ParseClient.getCoupon = function(id){
 }
 
 
-ParseClient.getSuperUsers = function(request){
+ParseClient.getSuperUsers = function(){
 
 	var promise = new Parse.Promise();
 
     var query = new Parse.Query(Parse.User);
     query.equalTo("isSuperUser",true);
     query.find({useMasterKey: true}).then(function(results){
-    	request.log.info(pretty(results));
         if(results && results.length > 0){
             // If result was defined, the object with this objectID was found
             promise.resolve(results);
@@ -75,7 +74,6 @@ ParseClient.getSuperUsers = function(request){
             promise.resolve(null);
         }
     }, function(error){
-    		request.log.info(pretty(error));
             promise.error(error);
     });
 
@@ -351,21 +349,23 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
 			query.first({ useMasterKey:true }).then(function(result){
-				if(result && result.get("email")){
+				
 					var mailOptions = {
-						from: '"Photopon" <noreply@photopon.com>', // sender address
-						to: result.get("email"), // list of receivers
-						subject: 'New Merchant Request Received', // Subject line
-						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>  (representative: "+result.get("firstName")+")" // html body
+						from: '"Photopon" <noreply@photopon.com>', 
+						subject: 'New Merchant Request Received', 
+						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result)?" (representative: "+result.get("firstName")+")":"")
 					};
-					// send mail with defined transport object
-					transporter.sendMail(mailOptions, (error, info) => {
-						
+					ParseClient.getSuperUsers().then(function(users){
+						if(users){
+							for( var i = 0; i<users.length; i++){
+								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+								transporter.sendMail(mailOptions, (error, info) => {});
+							}
+						}
+					},function(error){
 					});
 			
-				} else {
-		   
-				}
+				
 			}, function(error){
 			
 			});
@@ -398,22 +398,17 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 				if(result){
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
-						to: "david@ezrdv.org",//result.get("email"), // list of receivers
 						subject: 'New Coupon Added ', // Subject line
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
 					};
-					request.log.info(pretty(mailOptions));
-					ParseClient.getSuperUsers(request).then(function(users){
-						request.log.info( pretty(users));
+					ParseClient.getSuperUsers().then(function(users){
 						if(users){
 							for( var i = 0; i<users.length; i++){
-								mailOptions.to ="david@ezrdv.org";
-								mailOptions.subject ='New Coupon Added '+users[i].get('email');
+								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
 							}
 						}
 					},function(error){
-						request.log.info( pretty(error));
 					});
 					
 					
@@ -512,10 +507,8 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 	}else{
 	
 		var couponID = request.object.get("coupon").id;
-		request.log.info( pretty(couponID));
 		ParseClient.getCoupon(couponID).then(function(coupon){
 			if(coupon){
-				request.log.info( pretty(coupon));
 				request.object.set("creator", request.user);
 				request.object.set("installationId", request.installationId);
 
