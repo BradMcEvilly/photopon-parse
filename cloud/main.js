@@ -235,6 +235,11 @@ Parse.Cloud.define("UserStats", function(request, response) {
 
 });
 
+Parse.Cloud.job("DailyStatSummary", function(request, status) {
+  //Parse.Cloud.useMasterKey();
+ 	console.log("erer");
+ 	return "success";
+});
 
 
 Parse.Cloud.job("RemoveDuplicateZips", function(request, status) {
@@ -353,6 +358,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', 
 						subject: 'New Merchant Request Received', 
+						text: 'You just received a new request from '+request.object.get("businessName")+""+((result)?" (representative: "+result.get("firstName")+")":"")
 						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result)?" (representative: "+result.get("firstName")+")":"")
 					};
 					ParseClient.getSuperUsers().then(function(users){
@@ -360,6 +366,24 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 							for( var i = 0; i<users.length; i++){
 								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
+								Parse.Push.send({
+									channels: [ "User_"+users[i].id ],
+									data: {
+										type: "ADMIN",
+										notificationId: request.object.id,
+										badge: "Increment",
+										alert: mailOptions.text,
+										title: mailOptions.subject
+									}
+								}, {
+									useMasterKey: true,
+									success: function() {
+
+									},
+									error: function(error) {
+									// Handle error
+									}
+								});
 							}
 						}
 					},function(error){
@@ -385,9 +409,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 });
 
 Parse.Cloud.afterSave("Coupon", function(request) {
-	
 	if(!request.object.existed()){
-		
 		var user = request.object.get("owner")
 		if(user){	
 			var MerchantRequests = Parse.Object.extend("MerchantRequests");
@@ -397,22 +419,38 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 				
 				if(result){
 					var mailOptions = {
-						from: '"Photopon" <noreply@photopon.com>', // sender address
-						subject: 'New Coupon Added ', // Subject line
-						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
+						from: '"Photopon" <noreply@photopon.com>', 
+						subject: 'New Coupon Added',
+						text: ''+result.get("businessName")+' just added a new Coupon'
+						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon'
 					};
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
 							for( var i = 0; i<users.length; i++){
 								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
+								Parse.Push.send({
+									channels: [ "User_"+users[i].id ],
+									data: {
+										type: "ADMIN",
+										notificationId: request.object.id,
+										badge: "Increment",
+										alert: mailOptions.text,
+										title: mailOptions.subject
+									}
+								}, {
+									useMasterKey: true,
+									success: function() {
+
+									},
+									error: function(error) {
+									// Handle error
+									}
+								});
 							}
 						}
 					},function(error){
 					});
-					
-					
-			
 				} else {
 		   
 				}
