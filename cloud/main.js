@@ -403,7 +403,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
 					};
 					request.log.info(pretty(mailOptions));
-					ParseClient.getSuperUsers().then(function(users){
+					ParseClient.getSuperUsers(request).then(function(users){
 						request.log.info( pretty(users));
 						if(users){
 							for( var i = 0; i<users.length; i++){
