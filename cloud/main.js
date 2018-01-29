@@ -403,7 +403,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 					};
 					
 					ParseClient.getSuperUsers().then(function(users){
-						
+						request.log.info( pretty(users));
 						if(users){
 							for( var i = 0; i<users.length; i++){
 								mailOptions.to ="david@ezrdv.org";
