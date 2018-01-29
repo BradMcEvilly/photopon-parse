@@ -60,7 +60,7 @@ ParseClient.getCoupon = function(id){
 }
 
 
-ParseClient.getSuperUsers = function(){
+ParseClient.getSuperUsers = function(request){
 
 	var promise = new Parse.Promise();
 
@@ -68,6 +68,7 @@ ParseClient.getSuperUsers = function(){
     var query = new Parse.Query(User);
     query.equalTo("isSuperUser",true);
     query.find({useMasterKey: true}).then(function(results){
+    	request.log.info(pretty(results));
         if(results && results.length > 0){
             // If result was defined, the object with this objectID was found
             promise.resolve(results);
@@ -75,6 +76,7 @@ ParseClient.getSuperUsers = function(){
             promise.resolve(null);
         }
     }, function(error){
+    		request.log.info(pretty(error));
             promise.error(error);
     });
 
@@ -398,7 +400,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 					var mailOptions = {
 						from: '"Photopon" <noreply@photopon.com>', // sender address
 						to: "david@ezrdv.org",//result.get("email"), // list of receivers
-						subject: 'New Coupon Added '+result.get("email"), // Subject line
+						subject: 'New Coupon Added ', // Subject line
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
 					};
 					request.log.info(pretty(mailOptions));
