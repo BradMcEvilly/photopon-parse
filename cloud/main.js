@@ -401,7 +401,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 						subject: 'New Coupon Added '+result.get("email"), // Subject line
 						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon' // html body
 					};
-					request.log.info(mailOptions);
+					request.log.info(pretty(mailOptions));
 					ParseClient.getSuperUsers().then(function(users){
 						request.log.info( pretty(users));
 						if(users){
