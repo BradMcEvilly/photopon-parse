@@ -237,7 +237,8 @@ Parse.Cloud.define("UserStats", function(request, response) {
 
 Parse.Cloud.job("DailyStatSummary", function(request, status) {
   //Parse.Cloud.useMasterKey();
- 	console.log("erer");
+ 	status.message("I just started");
+ 	status.success("I just finished");
  	return "success";
 });
 
