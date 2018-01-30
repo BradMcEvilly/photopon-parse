@@ -277,9 +277,9 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		newPhotopons.lessThan("createdAt", finish.toDate());
 		
 		
-		promises.push(newMerchants.count(),newMerchantsByRep.count(),newCoupons.count(),newPhotopons.count());
+		promises.push(newMerchants.count());
 	
-		status.success((finish.toDate()));
+		
 		Parse.Promise.when(promises).then(function(result1,result2,result3,result4) {
 			var returnData = {};
 			returnData["newMerchants"] = result1; 
