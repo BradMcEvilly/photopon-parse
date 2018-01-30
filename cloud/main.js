@@ -265,7 +265,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		var newMerchantsByRep = new Parse.Query("MerchantRequests");
 		newMerchantsByRep.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchantsByRep.lessThan("createdAt", finish.toDate());
-		//newMerchantsByRep.distinct("promo");
+		newMerchantsByRep.distinct("promo");
 		//newMerchantsByRep.exist('promo');
 		
 		/*var newCoupons = new Parse.Query("Coupon");
