@@ -255,10 +255,10 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
  	request.log.info(prettry(start.format()));
  	request.log.info(prettry( end.format()));
  	
- 	promises.push(newMerchants.count());
+ 	promises.push(newMerchants.count({useMasterKey: true}));
  	
  	
- 	Parse.Promise.when(promises).then(function(result1) {
+ 	/*Parse.Promise.when(promises).then(function(result1) {
 	   	var returnData = {};
 	   	returnData["newMerchants"] = result1; 
 	   
@@ -268,7 +268,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 
 	}, function(error) {
 	    status.error(pretty(error));
-	});
+	});*/
 
 });
 
