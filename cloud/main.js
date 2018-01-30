@@ -259,12 +259,12 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
  	
  	
  	Parse.Promise.when(promises).then(function(result1) {
-	   	var returnData = [];
-	   	returnData.push(result1); 
+	   	var returnData = {};
+	   	returnData["newMerchants"] = result1; 
 	   
 
 		request.log.info(prettry(returnData));
-	    status.success("I just finished");
+	    status.success(prettry(returnData));
 
 	}, function(error) {
 	    status.success(pretty(error));
