@@ -255,28 +255,26 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		var finish = new moment(start);
 		finish.add(1, 'day');
 
-		request.log.info((start.toDate()));
-		request.log.info(( finish.toDate()));
-	
+		
 		var newMerchants = new Parse.Query("MerchantRequests");
 		newMerchants.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchants.lessThan("createdAt", finish.toDate());
 	
 		
-		//promises.push(newMerchants.count({useMasterKey: true}));
+		promises.push(newMerchants.count({useMasterKey: true}));
 	
 		status.success((finish.toDate()));
-		/*Parse.Promise.when(promises).then(function(result1) {
+		Parse.Promise.when(promises).then(function(result1) {
 			var returnData = {};
 			returnData["newMerchants"] = result1; 
 	   
 
-			request.log.info(prettry(returnData));
+			request.log.info(pretty(returnData));
 			status.success(pretty(returnData));
 
 		}, function(error) {
-			status.error(pretty(error));
-		});*/
+			status.error((error));
+		});
 	
 	}catch(e){
 	  status.error((e));
