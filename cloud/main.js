@@ -266,6 +266,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		newMerchantsByRep.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchantsByRep.lessThan("createdAt", finish.toDate());
 		newMerchantsByRep.exists('promo');
+		newMerchantsByRep.select("promo");
 		
 		var newCoupons = new Parse.Query("Coupon");
 		newCoupons.greaterThanOrEqualTo("createdAt", start.toDate());
@@ -277,7 +278,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		
 		
 		promises.push(newMerchants.count({useMasterKey: true}));
-		promises.push(newMerchantsByRep.count({useMasterKey: true}));
+		promises.push(newMerchantsByRep.find({useMasterKey: true}));
 		promises.push(newCoupons.count({useMasterKey: true}));
 		promises.push(newPhotopons.count({useMasterKey: true}));
 		
