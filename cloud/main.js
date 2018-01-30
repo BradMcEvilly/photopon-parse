@@ -262,13 +262,13 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		newMerchants.lessThan("createdAt", finish.toDate());
 		//ewMerchants.doesNotExist('parentItem');
 	
-		/*var newMerchantsByRep = new Parse.Query("MerchantRequests");
+		var newMerchantsByRep = new Parse.Query("MerchantRequests");
 		newMerchantsByRep.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchantsByRep.lessThan("createdAt", finish.toDate());
 		newMerchantsByRep.distinct("promo");
 		newMerchantsByRep.exist('promo');
 		
-		var newCoupons = new Parse.Query("Coupon");
+		/*var newCoupons = new Parse.Query("Coupon");
 		newCoupons.greaterThanOrEqualTo("createdAt", start.toDate());
 		newCoupons.lessThan("createdAt", finish.toDate());
 		
