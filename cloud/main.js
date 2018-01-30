@@ -238,40 +238,40 @@ Parse.Cloud.define("UserStats", function(request, response) {
 Parse.Cloud.job("DailyStatSummary", function(request, status) {
     
     try{
-    Parse.Cloud.useMasterKey();
-    
- 	status.message("I just started");
- 	
- 	request.log.info(("test"));
- 	
- 	var promises = [];
- 	
- 	var moment = require("moment");
-	var start = moment().sod();
-	var end = moment().eod();
+		Parse.Cloud.useMasterKey();
+	
+		status.message("I just started");
+	
+		request.log.info(("test"));
+	
+		var promises = [];
+	
+		var moment = require("moment");
+		var start = moment().sod();
+		var end = moment().eod();
 
- 	
- 	var newMerchants = new Parse.Query("MerchantRequests");
- 	newMerchants.greaterThanOrEqualTo("createdAt", start.format());
-	newMerchants.lessThan("createdAt", end.format());
- 	
- 	request.log.info((start.format()));
- 	request.log.info(( end.format()));
- 	
- 	//promises.push(newMerchants.count({useMasterKey: true}));
- 	
- 	status.success((end.format()));
- 	/*Parse.Promise.when(promises).then(function(result1) {
-	   	var returnData = {};
-	   	returnData["newMerchants"] = result1; 
+		request.log.info((start.format()));
+		request.log.info(( end.format()));
+	
+		var newMerchants = new Parse.Query("MerchantRequests");
+		newMerchants.greaterThanOrEqualTo("createdAt", start.format());
+		newMerchants.lessThan("createdAt", end.format());
+	
+		
+		//promises.push(newMerchants.count({useMasterKey: true}));
+	
+		status.success((end.format()));
+		/*Parse.Promise.when(promises).then(function(result1) {
+			var returnData = {};
+			returnData["newMerchants"] = result1; 
 	   
 
-		request.log.info(prettry(returnData));
-	    status.success(pretty(returnData));
+			request.log.info(prettry(returnData));
+			status.success(pretty(returnData));
 
-	}, function(error) {
-	    status.error(pretty(error));
-	});*/
+		}, function(error) {
+			status.error(pretty(error));
+		});*/
 	
 	}catch(e){
 	  status.error(pretty(e));
