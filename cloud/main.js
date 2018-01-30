@@ -246,7 +246,6 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 	
 		var promises = [];
 	
-		var moment = require("moment");
 		var start = moment().sod();
 		var end = moment().eod();
 
@@ -274,7 +273,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		});*/
 	
 	}catch(e){
-	  status.error(pretty(e));
+	  status.error(e);
 	
 	}
 
