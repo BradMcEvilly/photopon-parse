@@ -255,7 +255,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
  	request.log.info(pretty(start.format()));
  	request.log.info(pretty( end.format()));
  	
- 	promises.push(newMerchants.count({useMasterKey: true}));
+ 	//promises.push(newMerchants.count({useMasterKey: true}));
  	
  	status.success(pretty(end.format()));
  	/*Parse.Promise.when(promises).then(function(result1) {
