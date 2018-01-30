@@ -300,7 +300,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 							for( var i = 0; i<users.length; i++){
 								var mailOptions = {
 									from: '"Photopon" <noreply@photopon.com>', 
-									subject: 'Daily Stats '+start.format('ll');, 
+									subject: 'Daily Stats '+start.format('ll'), 
 									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
 								};
 								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
