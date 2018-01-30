@@ -15,8 +15,10 @@ function pretty(object) {
 var api_key = process.env.MAILGUN_API_KEY;
 var domain = process.env.MAILGUN_DOMAIN;
 var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
-
+var _ = require("underscore");
+var moment = require("moment");
 const nodemailer = require('nodemailer');
+var fs = require('fs');
 
 var transporter = nodemailer.createTransport({
         host: process.env.MAILGUN_SMTP_SERVER,
@@ -246,8 +248,6 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 	
 		var promises = [];
 	
-		var moment = require("moment");
-	
 		var d = new Date();
 		var start = new moment(d);
 		start.add(-1,'day');
@@ -286,13 +286,31 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		
 		Parse.Promise.when(promises).then(function(result1) {
 			var returnData = {};
-			returnData["newMerchants"] = result1[0]; 
-	   		returnData["newMerchantsByRep"] = result1[1]; 
+			returnData["New Merchants"] = result1[0]; 
+	   		returnData["newMerchantsByRep"] = result1[1].length; 
 	   		returnData["newCoupons"] = result1[2]; 
 	   		returnData["newPhotopons"] = result1[3]; 
+	   		
+	   		var file = fs.readFileSync("/app/template/dailyStats.html", "utf8");
+	   		var template = _.template(file);
 	   
-	   
-	   		var _ = require("underscore");
+	   		
+					ParseClient.getSuperUsers().then(function(users){
+						if(users){
+							for( var i = 0; i<users.length; i++){
+								var mailOptions = {
+									from: '"Photopon" <noreply@photopon.com>', 
+									subject: 'Daily Stats '+start.format('ll');, 
+									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
+								};
+								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+								transporter.sendMail(mailOptions, (error, info) => {});
+								
+							}
+						}
+					},function(error){
+					});
+			
 	   		
 	   		
 			request.log.info(pretty(returnData));
