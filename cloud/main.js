@@ -286,7 +286,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		
 		Parse.Promise.when(promises).then(function(result1) {
 			var returnData = {};
-			returnData["New Merchants"] = result1[0]; 
+			returnData["newMerchants"] = result1[0]; 
 	   		returnData["newMerchantsByRep"] = result1[1].length; 
 	   		returnData["newCoupons"] = result1[2]; 
 	   		returnData["newPhotopons"] = result1[3]; 
