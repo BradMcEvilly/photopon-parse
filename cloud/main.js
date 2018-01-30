@@ -236,7 +236,10 @@ Parse.Cloud.define("UserStats", function(request, response) {
 });
 
 Parse.Cloud.job("DailyStatSummary", function(request, status) {
+    
+    try{
     Parse.Cloud.useMasterKey();
+    
  	status.message("I just started");
  	
  	request.log.info(("test"));
@@ -269,6 +272,11 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 	}, function(error) {
 	    status.error(pretty(error));
 	});*/
+	
+	}catch(e){
+	  status.error(pretty(e));
+	
+	}
 
 });
 
