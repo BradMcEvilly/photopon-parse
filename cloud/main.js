@@ -239,7 +239,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
     Parse.Cloud.useMasterKey();
  	status.message("I just started");
  	
- 	request.log.info(prettry("test"));
+ 	request.log.info(("test"));
  	
  	var promises = [];
  	
