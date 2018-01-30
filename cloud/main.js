@@ -260,14 +260,32 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		var newMerchants = new Parse.Query("MerchantRequests");
 		newMerchants.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchants.lessThan("createdAt", finish.toDate());
+		//ewMerchants.doesNotExist('parentItem');
 	
+		var newMerchantsByRep = new Parse.Query("MerchantRequests");
+		newMerchantsByRep.greaterThanOrEqualTo("createdAt", start.toDate());
+		newMerchantsByRep.lessThan("createdAt", finish.toDate());
+		newMerchantsByRep.distinct("promo");
+		newMerchantsByRep.doesNotExist('promo');
 		
-		promises.push(newMerchants.count({useMasterKey: true}));
+		var newCoupons = new Parse.Query("Coupon");
+		newCoupons.greaterThanOrEqualTo("createdAt", start.toDate());
+		newCoupons.lessThan("createdAt", finish.toDate());
+		
+		var newPhotopons = new Parse.Query("Photopon");
+		newPhotopons.greaterThanOrEqualTo("createdAt", start.toDate());
+		newPhotopons.lessThan("createdAt", finish.toDate());
+		
+		
+		promises.push(newMerchants.count(),newMerchantsByRep.count(),newCoupons.count(),newPhotopons.count());
 	
 		status.success((finish.toDate()));
-		Parse.Promise.when(promises).then(function(result1) {
+		Parse.Promise.when(promises).then(function(result1,result2,result3,result4) {
 			var returnData = {};
 			returnData["newMerchants"] = result1; 
+	   		returnData["newMerchantsByRep"] = result2; 
+	   		returnData["newCoupons"] = result3; 
+	   		returnData["newPhotopons"] = result4; 
 	   
 
 			request.log.info(pretty(returnData));
