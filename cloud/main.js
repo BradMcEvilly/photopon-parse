@@ -262,7 +262,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		newMerchants.lessThan("createdAt", finish.toDate());
 		//ewMerchants.doesNotExist('parentItem');
 	
-		var newMerchantsByRep = new Parse.Query("MerchantRequests");
+		/*var newMerchantsByRep = new Parse.Query("MerchantRequests");
 		newMerchantsByRep.greaterThanOrEqualTo("createdAt", start.toDate());
 		newMerchantsByRep.lessThan("createdAt", finish.toDate());
 		newMerchantsByRep.distinct("promo");
@@ -275,9 +275,10 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		var newPhotopons = new Parse.Query("Photopon");
 		newPhotopons.greaterThanOrEqualTo("createdAt", start.toDate());
 		newPhotopons.lessThan("createdAt", finish.toDate());
-		
+		*/
 		
 		promises.push(newMerchants.count({useMasterKey: true}));
+		//promises.push(newMerchantsByRep.count({useMasterKey: true}));
 	
 		
 		Parse.Promise.when(promises).then(function(result1,result2,result3,result4) {
