@@ -284,10 +284,10 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		
 		Parse.Promise.when(promises).then(function(result1,result2,result3,result4) {
 			var returnData = {};
-			returnData.newMerchantsByRep = result1; 
-	   		returnData.newMerchantsByRep = result2; 
-	   		returnData.newCoupons = result3; 
-	   		returnData.newPhotopons = result4; 
+			returnData["a"] = result1; 
+	   		returnData["b"] = result2; 
+	   		returnData["c"] = result3; 
+	   		returnData["d"] = result4; 
 	   
 
 			request.log.info(pretty(returnData));
