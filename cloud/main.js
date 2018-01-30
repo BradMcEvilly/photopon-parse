@@ -252,12 +252,12 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
  	newMerchants.greaterThanOrEqualTo("createdAt", start.format());
 	newMerchants.lessThan("createdAt", end.format());
  	
- 	request.log.info(prettry(start.format()));
- 	request.log.info(prettry( end.format()));
+ 	request.log.info(pretty(start.format()));
+ 	request.log.info(pretty( end.format()));
  	
  	promises.push(newMerchants.count({useMasterKey: true}));
  	
- 	
+ 	status.success(pretty(end.format()));
  	/*Parse.Promise.when(promises).then(function(result1) {
 	   	var returnData = {};
 	   	returnData["newMerchants"] = result1; 
