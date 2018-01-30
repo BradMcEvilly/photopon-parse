@@ -282,12 +282,12 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		promises.push(newPhotopons.count({useMasterKey: true}));
 		
 		
-		Parse.Promise.when(promises).then(function(result1,result2,result3,result4) {
+		Parse.Promise.when(promises).then(function(result1) {
 			var returnData = {};
-			returnData["a"] = result1; 
-	   		returnData["b"] = result2; 
-	   		returnData["c"] = result3; 
-	   		returnData["d"] = result4; 
+			returnData["newMerchants"] = result1[0]; 
+	   		returnData["newMerchantsByRep"] = result1[1]; 
+	   		returnData["newCoupons"] = result1[2]; 
+	   		returnData["newPhotopons"] = result1[3]; 
 	   
 
 			request.log.info(pretty(returnData));
