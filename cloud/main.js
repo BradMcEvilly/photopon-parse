@@ -250,6 +250,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 	
 		var d = new Date();
 		var start = new moment(d);
+		start.add(-1,'day');
 		start.startOf('day');
 		
 		var finish = new moment(start);
