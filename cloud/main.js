@@ -284,8 +284,8 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 			var returnData = {};
 			returnData["newMerchants"] = result1; 
 	   		returnData["newMerchantsByRep"] = result2; 
-	   		returnData["newCoupons"] = result3; 
-	   		returnData["newPhotopons"] = result4; 
+	   		//returnData["newCoupons"] = result3; 
+	   		//returnData["newPhotopons"] = result4; 
 	   
 
 			request.log.info(pretty(returnData));
