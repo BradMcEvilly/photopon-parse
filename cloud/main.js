@@ -236,40 +236,7 @@ Parse.Cloud.define("UserStats", function(request, response) {
 });
 
 Parse.Cloud.job("DailyStatSummary", function(request, status) {
-    Parse.Cloud.useMasterKey();
- 	status.message("I just started");
- 	
- 	request.log.info(prettry("test"));
- 	
- 	var promises = [];
- 	
- 	var moment = require("moment");
-	var start = moment().sod() //Start of day
-	var end = moment().eod() //End of day
-
- 	
- 	var newMerchants = new Parse.Query("MerchantRequests");
- 	newMerchants.greaterThanOrEqualTo("createdAt", start.format());
-	newMerchants.lessThan("createdAt", end.format());
- 	
- 	request.log.info(prettry(start.format()));
- 	request.log.info(prettry( end.format()));
- 	
- 	promises.push(newMerchants.count());
- 	
- 	
- 	Parse.Promise.when(promises).then(function(result1) {
-	   	var returnData = {};
-	   	returnData["newMerchants"] = result1; 
-	   
-
-		request.log.info(prettry(returnData));
-	    status.success(prettry(returnData));
-
-	}, function(error) {
-	    status.error(pretty(error));
-	});
-
+    
 });
 
 
