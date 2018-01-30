@@ -255,7 +255,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
  	request.log.info(prettry(start.format()));
  	request.log.info(prettry( end.format()));
  	
- 	promises.push(firstQuery.count());
+ 	promises.push(newMerchants.count());
  	
  	
  	Parse.Promise.when(promises).then(function(result1) {
@@ -267,7 +267,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 	    status.success(prettry(returnData));
 
 	}, function(error) {
-	    status.success(pretty(error));
+	    status.error(pretty(error));
 	});
 
 });
