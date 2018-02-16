@@ -17,6 +17,7 @@
     "nodemailer": "^4.4.2",
     "parse": "^1.11.0",
     "parse-server": "^2.7.2",
+    "parse-server-mailgun": "^2.4.7",
     "twilio": "^2.11.1",
     "underscore": "^1.8.3"
   },

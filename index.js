@@ -28,6 +28,25 @@ var api = new ParseServer({
 		  production: false
 		}
 	}
+  verifyUserEmails: false,
+  emailAdapter: {
+    module: 'parse-server-mailgun',
+    options: {
+      // The address that your emails come from
+      fromAddress: 'Photopon <noreply@photopon.com>',
+      // Your domain from mailgun.com
+      domain: 'mail2.klassroom.co',
+      // Your API key from mailgun.com
+      apiKey: 'key-2a50083208b00c8604c0f60187ed131a',
+      // The template section
+      templates: {
+        passwordResetEmail: {
+          subject: 'Reset your password',
+          pathHtml: resolve(__dirname, '/app/template/password_reset_email.html')
+        }
+      }
+    }
+  }
 });
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
 // If you wish you require them, you can set them as options in the initialization above:
