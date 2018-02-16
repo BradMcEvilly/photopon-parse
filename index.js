@@ -42,7 +42,7 @@ var api = new ParseServer({
       templates: {
         passwordResetEmail: {
           subject: 'Reset your password',
-          pathHtml: resolve(__dirname, '/app/template/password_reset_email.html')
+          pathHtml: '/app/template/password_reset_email.html'
         }
       }
     }
