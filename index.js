@@ -27,7 +27,7 @@ var api = new ParseServer({
 		  bundleId: 'com.photopon.Photopon',
 		  production: false
 		}
-	}
+	},
   verifyUserEmails: false,
   emailAdapter: {
     module: 'parse-server-mailgun',
