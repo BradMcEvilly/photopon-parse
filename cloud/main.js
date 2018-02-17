@@ -162,6 +162,10 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 	}, function(error) {
 		request.log.info("User does't exist");
         response.error("User does't exist");
+	}).catch(function(error){
+		request.log.info("User does't exist.");
+        response.error("User does't exist.");
+	
 	});	   
 	   		
 
