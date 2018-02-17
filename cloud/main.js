@@ -158,10 +158,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 		};
 		mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 	   transporter.sendMail(mailOptions, (error, info) => {});
-							
-	}, function(error) {
-		request.log.info("User does't exist");
-        response.error("User does't exist");
+				response.success();			
 	}).catch(function(error){
 		request.log.info("User does't exist.");
         response.error("User does't exist.");
