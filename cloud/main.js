@@ -148,7 +148,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 				});
 		
 		
-    request.log.info(password);
+       request.log.info(password);
 	
 	   
 	   var mailOptions = {
@@ -160,6 +160,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 	   transporter.sendMail(mailOptions, (error, info) => {});
 							
 	}, function(error) {
+		request.log.info("User does't exist");
         response.error("User does't exist");
 	});	   
 	   		
