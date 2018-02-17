@@ -123,10 +123,11 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
    var file = fs.readFileSync("/app/template/password_reset_email.html", "utf8");
    var template = _.template(file);
 	   
-	   
+	
 
     var email = request.params.email;
     
+    request.log.info(email);
 
     var query = new Parse.Query(Parse.User);
     query.equalTo("email", email);
@@ -145,7 +146,10 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 						
 					}
 				});
-			
+		
+		
+    request.log.info(password);
+	
 	   
 	   var mailOptions = {
 				from: '"Photopon" <noreply@photopon.com>', 
