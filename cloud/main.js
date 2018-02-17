@@ -153,12 +153,14 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 	   
 	   var mailOptions = {
 				from: '"Photopon" <noreply@photopon.com>', 
-				subject: 'Reset Password Link', 
+				subject: 'Reset Password', 
 				html: template({name:user.get("username"),password: password })
 		};
 		mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 	   transporter.sendMail(mailOptions, (error, info) => {});
-				response.success();			
+	   
+	   response.success();	
+	   		
 	}).catch(function(error){
 		request.log.info("User does't exist.");
         response.error("User does't exist.");
