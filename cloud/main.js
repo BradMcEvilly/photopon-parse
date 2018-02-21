@@ -494,15 +494,17 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			query.equalTo("repID",promocode);
 			query.first({ useMasterKey:true }).then(function(result){
 				
-					var mailOptions = {
-						from: '"Photopon" <noreply@photopon.com>', 
-						subject: 'New Merchant Request Received', 
-						text: 'You just received a new request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
-						html: 'You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
-					};
+					
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
 							for( var i = 0; i<users.length; i++){
+							
+							var mailOptions = {
+								from: '"Photopon" <noreply@photopon.com>', 
+								subject: 'New Merchant Request Received', 
+								text: 'Dear '+users[i].get('username')+',\n\n You just received a new request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
+								html: 'Dear '+users[i].get('username')+',<br><br>You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
+							};
 								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
 								Parse.Push.send({
