@@ -502,10 +502,10 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 							var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'New Merchant Request Received', 
-								text: 'Dear '+users[i].get('username')+',\n\n You just received a new request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
-								html: 'Dear '+users[i].get('username')+',<br><br>You just received a new request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
+								text: 'Dear '+users[i].get('username')+',\n\n You just received a new merchant access request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
+								html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
 							};
-								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+								mailOptions.to = users[i].get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
 								Parse.Push.send({
 									channels: [ "User_"+users[i].id ],
