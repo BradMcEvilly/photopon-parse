@@ -488,7 +488,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 	if(!request.object.existed()){
 		
 		var promocode = request.object.get("promo")
-		if(promocode){	
+		//if(promocode){	
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
@@ -531,11 +531,11 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 					});
 			
 				
-			}, function(error){
-			
-			});
+			}).catch(function(error){
+				request.log.info(pretty(error));
+				});
 		
-		}
+		//}
 	
 	}
 
