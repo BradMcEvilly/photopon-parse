@@ -631,8 +631,11 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 									transporter.sendMail(mailOptions, (error, info) => {});
 								
 								
-						request.object.destroy({useMasterKey: true});
-						user.destroy({useMasterKey: true});
+						
+							u.destroy({useMasterKey: true}),then(function(){
+								request.object.destroy({useMasterKey: true});
+						
+							});
 						});
 					
 				
