@@ -555,8 +555,8 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Request Received', 
-								text: 'Dear '+user.get('username')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.';
-								html: 'Dear '+user.get('username')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.';
+								text: 'Dear '+user.get('username')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
+								html: 'Dear '+user.get('username')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
 							};
 								mailOptions.to = user.get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
