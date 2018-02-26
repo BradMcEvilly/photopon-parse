@@ -628,7 +628,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 						
 						var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
 								
-								if(u){
 								
 								var mailOptions = {
 									from: '"Photopon" <noreply@photopon.com>', 
@@ -639,35 +638,22 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 									mailOptions.to = u.get('email')
 									transporter.sendMail(mailOptions, (error, info) => {});
 								
-								
-								var query = new Parse.Query(Parse.User);
-								query.get(user.id, {useMasterKey: true}).then(function(userr){
-									 request.log.info(pretty(userr));
-									userr.destroy({useMasterKey: true}),then(function(){
+								userr.destroy({useMasterKey: true}),then(function(){
 										request.object.destroy({useMasterKey: true});
-						
-									}).catch(function(error){
-									 request.log.info(pretty(error));
-
-									});
+								}).catch(function(error){
+									request.log.info(pretty(error));
 								});
-								}else{
-										
-										request.log.info(pretty(userr));
-								
-								}
 								
 								
 						
 							
+						}).catch(function(error){
+							request.object.destroy({useMasterKey: true});
+						
 						});
 					
 						
-						}else{
-						
-							request.object.destroy({useMasterKey: true});
-						
-						}
+					
 						
 						
 				
