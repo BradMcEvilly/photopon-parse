@@ -619,8 +619,11 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 		
 		}else{
 					
+					
+						request.log.info("ICI");
 						var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
-				
+								request.log.info(pretty(u));
+						
 								var mailOptions = {
 									from: '"Photopon" <noreply@photopon.com>', 
 									subject: 'Request Denied', 
