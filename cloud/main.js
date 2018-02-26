@@ -631,11 +631,16 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 									transporter.sendMail(mailOptions, (error, info) => {});
 								
 								
+								var query = new Parse.Query(Parse.User);
+								query.get(user.id, {useMasterKey: true}).then(function(userr){
+									
+									userr.destroy({useMasterKey: true}),then(function(){
+										request.object.destroy({useMasterKey: true});
 						
-							u.destroy({useMasterKey: true}),then(function(){
-								request.object.destroy({useMasterKey: true});
+									});
+								});
 						
-							});
+							
 						});
 					
 				
