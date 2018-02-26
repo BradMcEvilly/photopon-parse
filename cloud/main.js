@@ -171,7 +171,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 				subject: 'Reset Password', 
 				html: template({name:user.get("username"),password: password })
 		};
-		mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+		mailOptions.to = users[i].get('email');
 	   transporter.sendMail(mailOptions, (error, info) => {});
 	   
 	   response.success("");	
@@ -371,7 +371,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 									subject: 'Daily Stats '+start.format('ll'), 
 									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
 								};
-								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+								mailOptions.to = users[i].get('email');
 								transporter.sendMail(mailOptions, (error, info) => {});
 								
 							}
@@ -583,7 +583,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 					ParseClient.getSuperUsers().then(function(users){
 						if(users){
 							for( var i = 0; i<users.length; i++){
-								mailOptions.to ="david@ezrdv.org"; //users[i].get('email')
+								mailOptions.to = users[i].get('email');
 								transporter.sendMail(mailOptions, (error, info) => {});
 								Parse.Push.send({
 									channels: [ "User_"+users[i].id ],
