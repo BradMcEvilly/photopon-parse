@@ -569,7 +569,8 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 		
 		//}
 	
-	}
+	}else{
+	
 
 
 	if (request.object.get("isAccepted")) {
@@ -599,9 +600,9 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				
 							var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
-								subject: 'Request Received', 
-								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
-								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
+								subject: 'Request Accepted', 
+								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been accepted. You can now login.',
+								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been accepted. You can now login.'
 							};
 								mailOptions.to = u.get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
@@ -616,6 +617,26 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			});
 		
 		
+		}else{
+					
+						var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
+				
+								var mailOptions = {
+									from: '"Photopon" <noreply@photopon.com>', 
+									subject: 'Request Denied', 
+									text: 'Dear '+request.object.get('businessName')+',\n\Sorry your request has been denied.',
+									html: 'Dear '+request.object.get('businessName')+', <br><br>Sorry your request has been denied.'
+								};
+									mailOptions.to = u.get('email')
+									transporter.sendMail(mailOptions, (error, info) => {});
+								
+								
+						request.object.destroy({useMasterKey: true});
+						user.destroy({useMasterKey: true});
+					
+				
+		}
+	
 	}
 
 });
