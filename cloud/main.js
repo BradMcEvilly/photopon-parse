@@ -551,7 +551,9 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				});
 				
 				var user = request.object.get("user");
-				
+				request.log.info(pretty(user));
+				request.log.info(user.get('phone'));
+				request.log.info(user.get('email'));
 				var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Request Received', 
