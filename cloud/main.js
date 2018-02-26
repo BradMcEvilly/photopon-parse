@@ -576,20 +576,17 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 	
 			var CompanyClass = Parse.Object.extend("Company");
 			var company = new CompanyClass();
-
-			
-
 			company.set("merchant",request.object.get("user"));
 			company.set("name", request.object.get("businessName"));
 			company.set("image", request.object.get("logo"));
-			company.save(null, {useMasterKey: true}).then(function(){
+			company.save(null, {useMasterKey: true}).then(function(company){
 					var promocode = request.object.get("promo")
 					if(promocode){	
 						var Representative = Parse.Object.extend("Representative");
 						var query = new Parse.Query(Representative);
 						query.equalTo("repID",promocode);
 						query.first({ useMasterKey:true }).then(function(result){
-							company.set("rep",result.id);
+							company.set("rep",result);
 							company.save(null, {useMasterKey: true});
 						})
 			
@@ -597,6 +594,22 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 					request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
 					request.object.get("user", {useMasterKey: true}).save(null,{useMasterKey: true});
 					request.object.destroy({useMasterKey: true});
+					
+							var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
+				
+							var mailOptions = {
+								from: '"Photopon" <noreply@photopon.com>', 
+								subject: 'Request Received', 
+								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
+								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
+							};
+								mailOptions.to = u.get('email')
+								transporter.sendMail(mailOptions, (error, info) => {});
+				
+			
+				
+				});
+					
 			}).catch(function(error){
 				request.object.set("isAccepted",false);
 				request.object.save(null,{useMasterKey: true});
