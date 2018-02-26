@@ -633,6 +633,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 								
 						request.object.destroy({useMasterKey: true});
 						user.destroy({useMasterKey: true});
+						});
 					
 				
 		}
