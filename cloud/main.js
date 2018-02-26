@@ -552,9 +552,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				
 				var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
 				
-				request.log.info(pretty(user));
-				request.log.info(u.get('phone'));
-				request.log.info(u.get('email'));
 				var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Request Received', 
@@ -576,10 +573,36 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 
 
 	if (request.object.get("isAccepted")) {
-		//Parse.Cloud.useMasterKey();
-		request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
-		request.object.get("user", {useMasterKey: true}).save({useMasterKey: true});
-		request.object.destroy({useMasterKey: true});
+	
+			var CompanyClass = Parse.Object.extend("Company");
+			var company = new CompanyClass();
+
+			
+
+			company.set("merchant",request.object.get("user"));
+			company.set("name", request.object.get("businessName"));
+			company.set("image", request.object.get("logo"));
+			company.save(null, {useMasterKey: true}).then(function(){
+					var promocode = request.object.get("promo")
+					if(promocode){	
+						var Representative = Parse.Object.extend("Representative");
+						var query = new Parse.Query(Representative);
+						query.equalTo("repID",promocode);
+						query.first({ useMasterKey:true }).then(function(result){
+							company.set("rep",result.id);
+							company.save(null, {useMasterKey: true});
+						})
+			
+					}
+					request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
+					request.object.get("user", {useMasterKey: true}).save(null,{useMasterKey: true});
+					request.object.destroy({useMasterKey: true});
+			}).catch(function(error){
+				request.object.set("isAccepted",false);
+				request.object.save(null,{useMasterKey: true});
+			});
+		
+		
 	}
 
 });
