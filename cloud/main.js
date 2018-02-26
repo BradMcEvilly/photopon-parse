@@ -502,7 +502,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 	
 	if(!request.object.existed()){
 		
-		var promocode = request.object.get("promo")
+			var promocode = request.object.get("promo")
 		//if(promocode){	
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
@@ -521,7 +521,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 								html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
 							};
 								mailOptions.to = users[i].get('email')
-								transporter.sendMail(mailOptions, (error, info) => {});
+								//transporter.sendMail(mailOptions, (error, info) => {});
 								Parse.Push.send({
 									channels: [ "User_"+users[i].id ],
 									data: {
@@ -549,6 +549,20 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			}).catch(function(error){
 				request.log.info(pretty(error));
 				});
+				
+				var user = request.object.get("user");
+				
+				var mailOptions = {
+								from: '"Photopon" <noreply@photopon.com>', 
+								subject: 'Request Received', 
+								text: 'Dear '+user.get('username')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.';
+								html: 'Dear '+user.get('username')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.';
+							};
+								mailOptions.to = user.get('email')
+								transporter.sendMail(mailOptions, (error, info) => {});
+				
+			
+							
 		
 		//}
 	
