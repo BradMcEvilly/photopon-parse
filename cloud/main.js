@@ -620,10 +620,8 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 		}else{
 					
 					
-						request.log.info("ICI");
-						request.log.info(pretty(request.object));
 						
-						if(request.object.get("user")){
+			if(request.object.get("user")){
 						
 						
 						var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
@@ -656,7 +654,9 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 					
 						
 						
-				
+			}else{
+				request.object.destroy({useMasterKey: true});
+			}		
 		}
 	
 	}
