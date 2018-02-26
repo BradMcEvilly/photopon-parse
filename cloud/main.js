@@ -718,12 +718,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 	}
 
 
-	if (request.object.get("isAccepted")) {
-		//Parse.Cloud.useMasterKey();
-		request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
-		request.object.get("user", {useMasterKey: true}).save({useMasterKey: true});
-		request.object.destroy({useMasterKey: true});
-	}
+	
 
 });
 
