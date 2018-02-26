@@ -633,10 +633,13 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 								
 								var query = new Parse.Query(Parse.User);
 								query.get(user.id, {useMasterKey: true}).then(function(userr){
-									
+									 request.log.info(pretty(userr));
 									userr.destroy({useMasterKey: true}),then(function(){
 										request.object.destroy({useMasterKey: true});
 						
+									}).catch(function(error){
+									 request.log.info(pretty(error));
+
 									});
 								});
 						
