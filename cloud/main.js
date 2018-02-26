@@ -171,7 +171,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 				subject: 'Reset Password', 
 				html: template({name:user.get("username"),password: password })
 		};
-		mailOptions.to = users[i].get('email');
+		mailOptions.to = user.get('email');
 	   transporter.sendMail(mailOptions, (error, info) => {});
 	   
 	   response.success("");	
