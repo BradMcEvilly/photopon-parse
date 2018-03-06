@@ -519,7 +519,7 @@ Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
 			promises.push(queryCompany.first({useMasterKey: true}));
 		
 			Parse.Promise.when(promises).then(function(result) {
-			
+				request.log.info(pretty(result));
 				if(result[0] ||  result[1]){
 				
 					response.error("A company with this EIN already exists");
