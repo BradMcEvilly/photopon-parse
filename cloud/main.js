@@ -634,6 +634,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			var CompanyClass = Parse.Object.extend("Company");
 			var company = new CompanyClass();
 			company.set("merchant",request.object.get("user"));
+			company.set("taxID",request.object.get("taxID"));
 			company.set("name", request.object.get("businessName"));
 			company.set("image", request.object.get("logo"));
 			company.save(null, {useMasterKey: true}).then(function(company){
