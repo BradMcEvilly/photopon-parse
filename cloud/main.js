@@ -506,7 +506,7 @@ Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
 		
 			var promises = [];
 			
-			var MerchantRequest = Parse.Object.extend("MerchantRequest");
+			var MerchantRequest = Parse.Object.extend("MerchantRequests");
 			var queryMerchantRequest = new Parse.Query(MerchantRequest);
 			queryMerchantRequest.equalTo("taxID",request.object.get("taxID"));
 			
