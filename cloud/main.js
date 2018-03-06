@@ -508,7 +508,7 @@ Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
 		response.error("A company with this EIN already exists");
 
 
-}
+});
 
 
 Parse.Cloud.afterSave("MerchantRequests", function(request) {
