@@ -514,6 +514,7 @@ Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
 			var queryCompany = new Parse.Query(Company);
 			queryCompany.equalTo("taxID",request.object.get("taxID"));
 			
+			request.log.info(request.object.get("taxID"));
 			
 			promises.push(queryMerchantRequest.first({useMasterKey: true}));
 			promises.push(queryCompany.first({useMasterKey: true}));
