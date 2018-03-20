@@ -194,40 +194,26 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
     var token = request.params.token;
     
    	if(!token){
-   	
    		response.error("Invalid Token");
    	}else{
 		var query = new Parse.Query(Parse.User);
-		query.equalTo("emailVerificationToken", token);
+		query.equalTo("emailValidationToken", token);
 		query.limit(1);
-		request.log.info(token);
 		query.first({useMasterKey: true}).then(function(u) {
-		   request.log.info(pretty(u));
-		   request.log.info("found user");
-	  
-		   u.set("emailVerificationToken",null);
-		   u.set("emailVerified",true);
-		   u.save(null, {
-						useMasterKey: true,
-						success: function(u1) {
-							 response.success("");	
-						},
-						error: function(u1, error) {
-							request.log.info(pretty(error));
-							response.error("Invalid Token");
-						}
-					});
-		
-		
-		 
-	   
-		  
-			
+		   if(u){
+			   u.set("emailValidationToken",null);
+			   u.set("emailVerified",true);
+			   u.save(null, {useMasterKey: true}).then(function(user) {
+								 response.success("");
+								 }).catch(function(error) {
+									response.error("Invalid Token");
+								});
+					  
+			}else{
+				response.error("Invalid Token");
+			}
 		}).catch(function(error){
-			request.log.info("aaa");
-			request.log.info(pretty(error));
 			response.error("Invalid Token");
-	
 		});	
    	
    	}
