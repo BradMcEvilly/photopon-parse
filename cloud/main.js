@@ -201,17 +201,18 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
 		query.equalTo("emailVerificationToken", token);
 		query.limit(1);
 		request.log.info(token);
-		query.first({useMasterKey: true}).then(function(user) {
+		query.first({useMasterKey: true}).then(function(u) {
 		   
+		   request.log.info("found user");
 	  
-		   user.set("emailVerificationToken",null);
-		   user.set("emailVerified",true);
-		   user.save(null, {
+		   u.set("emailVerificationToken",null);
+		   u.set("emailVerified",true);
+		   u.save(null, {
 						useMasterKey: true,
-						success: function(user) {
+						success: function(u1) {
 						
 						},
-						error: function(user, error) {
+						error: function(u1, error) {
 						
 						}
 					});
