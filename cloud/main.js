@@ -187,6 +187,52 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 });
 
 
+Parse.Cloud.define("validateEmailClient", function(request, response) {
+
+   
+    var token = request.params.token;
+    
+   	if(!token){
+   	
+   		response.error("Invalid Token");
+   	}else{
+		var query = new Parse.Query(Parse.User);
+		query.equalTo("token", token);
+		query.limit(1);
+
+		query.first({useMasterKey: true}).then(function(user) {
+		   var password  = Math.random().toString(36).slice(-8);
+	  
+		   user.set("token",null);
+		   user.set("emailVerified",true);
+		   user.save(null, {
+						useMasterKey: true,
+						success: function(user) {
+						
+						},
+						error: function(user, error) {
+						
+						}
+					});
+		
+		
+		 
+	   
+		   response.success("");	
+			
+		}).catch(function(error){
+			response.error("Invalid Token");
+	
+		});	
+   	
+   	}
+   
+      
+	   		
+
+});
+
+
 Parse.Cloud.define("GetMerchantPhotopons", function(request, response) {
 
     //Parse.Cloud.useMasterKey();
