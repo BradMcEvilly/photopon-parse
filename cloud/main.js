@@ -189,7 +189,8 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 
 Parse.Cloud.define("validateEmailClient", function(request, response) {
 
-   
+   request.log.info("run function");
+		
     var token = request.params.token;
     
    	if(!token){
