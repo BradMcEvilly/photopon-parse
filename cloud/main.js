@@ -657,11 +657,39 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				
 				var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
 				
+				var token =(Math.random()*Math.random()).toString(16).substr(2);
+				
+				u.set("emailValidationToken", token);
+				
+				u.save(null, {
+						useMasterKey: true,
+						success: function(user) {
+						
+						},
+						error: function(user, error) {
+						
+						}
+					});
+				
 				var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Request Received', 
 								text: 'Dear '+request.object.get('businessName')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
 								html: 'Dear '+request.object.get('businessName')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
+							};
+								mailOptions.to = u.get('email')
+								transporter.sendMail(mailOptions, (error, info) => {});
+				
+			
+				
+				});
+				
+				
+				var mailOptions = {
+								from: '"Photopon" <noreply@photopon.com>', 
+								subject: 'Email Validation', 
+								text: 'Dear '+request.object.get('businessName')+',\n\nPlease validate your email address by clicking to the following link: http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'. \n\nThank you.',
+								html: 'Dear '+request.object.get('businessName')+',<br><br>Please validate your email address by clicking to the following link: <a href="http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'">http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'</a>. <br><br>Thank you.'
 							};
 								mailOptions.to = u.get('email')
 								transporter.sendMail(mailOptions, (error, info) => {});
