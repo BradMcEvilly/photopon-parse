@@ -652,8 +652,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			
 				
 			}).catch(function(error){
-				request.log.info(pretty(error));
-				});
+				
 				
 				var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
 				
