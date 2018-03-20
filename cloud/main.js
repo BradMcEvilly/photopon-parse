@@ -197,7 +197,7 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
    		response.error("Invalid Token");
    	}else{
 		var query = new Parse.Query(Parse.User);
-		query.equalTo("token", token);
+		query.equalTo("emailVerificationToken", token);
 		query.limit(1);
 
 		query.first({useMasterKey: true}).then(function(user) {
