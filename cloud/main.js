@@ -202,7 +202,7 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
 		query.limit(1);
 		request.log.info(token);
 		query.first({useMasterKey: true}).then(function(u) {
-		   
+		   request.log.info(pretty(u));
 		   request.log.info("found user");
 	  
 		   u.set("emailVerificationToken",null);
@@ -224,6 +224,7 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
 		  
 			
 		}).catch(function(error){
+			request.log.info("aaa");
 			request.log.info(pretty(error));
 			response.error("Invalid Token");
 	
