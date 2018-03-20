@@ -210,17 +210,18 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
 		   u.save(null, {
 						useMasterKey: true,
 						success: function(u1) {
-						
+							 response.success("");	
 						},
 						error: function(u1, error) {
-						
+							request.log.info(pretty(error));
+							response.error("Invalid Token");
 						}
 					});
 		
 		
 		 
 	   
-		   response.success("");	
+		  
 			
 		}).catch(function(error){
 			request.log.info(pretty(error));
