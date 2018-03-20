@@ -203,7 +203,7 @@ Parse.Cloud.define("validateEmailClient", function(request, response) {
 		query.first({useMasterKey: true}).then(function(user) {
 		   var password  = Math.random().toString(36).slice(-8);
 	  
-		   user.set("token",null);
+		   user.set("emailVerificationToken",null);
 		   user.set("emailVerified",true);
 		   user.save(null, {
 						useMasterKey: true,
