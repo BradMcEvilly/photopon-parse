@@ -682,7 +682,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				
 			
 			
-			var mailOptions = {
+						var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Email Validation', 
 								text: 'Dear '+request.object.get('businessName')+',\n\nPlease validate your email address by clicking to the following link: http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'. \n\nThank you.',
@@ -695,7 +695,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 				
 				});
 				
-		});
+	
 				
 				
 				
