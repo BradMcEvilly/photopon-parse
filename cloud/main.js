@@ -602,46 +602,52 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 			var Representative = Parse.Object.extend("Representative");
 			var query = new Parse.Query(Representative);
 			query.equalTo("repID",promocode);
-			query.first({ useMasterKey:true }).then(function(result){
+			query.first({ useMasterKey:true }).then(function(representative){
 				
 					
-					ParseClient.getSuperUsers().then(function(users){
-						if(users){
-							for( var i = 0; i<users.length; i++){
+					
+					
+						ParseClient.getSuperUsers().then(function(users){
+							if(users){
+								for( var i = 0; i<users.length; i++){
 							
-							var mailOptions = {
-								from: '"Photopon" <noreply@photopon.com>', 
-								subject: 'New Merchant Request Received', 
-								text: 'Dear '+users[i].get('username')+',\n\n You just received a new merchant access request from '+request.object.get("businessName")+""+((result)? " (representative: "+result.get("firstName")+")":""),
-								html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((result) ? " (representative: "+result.get("firstName")+")" : "")
-							};
-								mailOptions.to = users[i].get('email');
-								mailOptions.bcc = "david@ezrdv.org";
-								request.log.info(users[i].get('email'));
-								transporter.sendMail(mailOptions, (error, info) => {});
-								Parse.Push.send({
-									channels: [ "User_"+users[i].id ],
-									data: {
-										type: "ADMIN",
-										notificationId: request.object.id,
-										badge: "Increment",
-										alert: mailOptions.text,
-										title: mailOptions.subject
-									}
-								}, {
-									useMasterKey: true,
-									success: function() {
+								var mailOptions = {
+									from: '"Photopon" <noreply@photopon.com>', 
+									subject: 'New Merchant Request Received', 
+									text: 'Dear '+users[i].get('username')+',\n\n You just received a new merchant access request from '+request.object.get("businessName")+""+((representative)? " (representative: "+representative.get("firstName")+")":""),
+									html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((representative) ? " (representative: "+representative.get("firstName")+")" : "")
+								};
+									mailOptions.to = users[i].get('email');
+									mailOptions.bcc = "david@ezrdv.org";
+									request.log.info(users[i].get('email'));
+									transporter.sendMail(mailOptions, (error, info) => {});
+									Parse.Push.send({
+										channels: [ "User_"+users[i].id ],
+										data: {
+											type: "ADMIN",
+											notificationId: request.object.id,
+											badge: "Increment",
+											alert: mailOptions.text,
+											title: mailOptions.subject
+										}
+									}, {
+										useMasterKey: true,
+										success: function() {
 
-									},
-									error: function(error) {
-									// Handle error
-									}
-								});
+										},
+										error: function(error) {
+										// Handle error
+										}
+									});
+								}
 							}
+						}).catch(function(error){
+						});
+						
+						if(representative){
+							request.object.set("isAccepted", true);
+							request.object.save(null, {useMasterKey: true});
 						}
-					},function(error){
-					});
-			
 				
 			}).catch(function(error){
 				request.log.info(pretty(error));
