@@ -735,8 +735,8 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 							var mailOptions = {
 								from: '"Photopon" <noreply@photopon.com>', 
 								subject: 'Request Accepted', 
-								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been accepted. You can now login.',
-								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been accepted. You can now login.'
+								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been accepted. You can now login. \nhttp://photopon.co/merchants/admin/#/access/signin',
+								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been accepted. You can now login.<br><a href="http://photopon.co/merchants/admin/#/access/signin">http://photopon.co/merchants/admin/#/access/signin</a>'
 							};
 								mailOptions.to = u.get('email')
 								mailOptions.bcc = "david@ezrdv.org";
