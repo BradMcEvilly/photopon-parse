@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^3.0.0",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "kerberos": "~0.0.x",
     "mailgun": "^0.5.0",
