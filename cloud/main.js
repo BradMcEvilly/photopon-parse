@@ -1,17 +1,20 @@
 ///Custom Functions
-
 function pretty(object) {
-
 	return JSON.stringify(object, null, 2);
-
 }
 
+function isWithinOneDay(dateTime) {
+  if(!dateTime) { return false; }
+  var oneDay = 24 * 60 * 60 * 1000;
+  return (new Date()).getTime() - dateTime.getTime() <= oneDay;
+}
 
+function daysSince(dateTime) {
+  var oneDay = 24 * 60 * 60 * 1000;
+  return ((new Date()).getTime() - dateTime.getTime()) / oneDay;
+}
 
 //EMAIL
-
-
-
 var api_key = process.env.MAILGUN_API_KEY;
 var domain = process.env.MAILGUN_DOMAIN;
 var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
@@ -21,286 +24,234 @@ const nodemailer = require('nodemailer');
 var fs = require('fs');
 
 var transporter = nodemailer.createTransport({
-        host: process.env.MAILGUN_SMTP_SERVER,
-        port: process.env.MAILGUN_SMTP_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user:  process.env.MAILGUN_SMTP_LOGIN, // generated ethereal user
-            pass:  process.env.MAILGUN_SMTP_PASSWORD  // generated ethereal password
-        }
-    });
+    host: process.env.MAILGUN_SMTP_SERVER,
+    port: process.env.MAILGUN_SMTP_PORT,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user:  process.env.MAILGUN_SMTP_LOGIN, // generated ethereal user
+      pass:  process.env.MAILGUN_SMTP_PASSWORD  // generated ethereal password
+    }
+  });
 
 var MailComposer = require('nodemailer/lib/mail-composer');
- 
- 
 var path = require('path');
 var fs = require('fs');
 ///
 
 ParseClient = {}
 
-
 ParseClient.getCoupon = function(id){
-
 	var promise = new Parse.Promise();
-
-    var Coupon = Parse.Object.extend("Coupon");
-    var query = new Parse.Query(Coupon);
-    query.equalTo("objectId",id);
-    query.first({useMasterKey: true}).then(function(result){
-        if(result){
-            // If result was defined, the object with this objectID was found
-            promise.resolve(result);
-        } else {
-            promise.resolve(null);
-        }
-    }, function(error){
-            promise.error(error);
-    });
-
-    return promise;
+  var Coupon = Parse.Object.extend("Coupon");
+  var query = new Parse.Query(Coupon);
+  query.equalTo("objectId",id);
+  query.first({useMasterKey: true}).then(function(result){
+    if(result){
+      // If result was defined, the object with this objectID was found
+      promise.resolve(result);
+    } else {
+      promise.resolve(null);
+    }
+  }, function(error){
+    promise.error(error);
+  });
+  return promise;
 }
-
 
 ParseClient.getSuperUsers = function(){
-
 	var promise = new Parse.Promise();
+  var query = new Parse.Query(Parse.User);
+  query.equalTo("isSuperUser",true);
 
-    var query = new Parse.Query(Parse.User);
-    query.equalTo("isSuperUser",true);
-    query.find({useMasterKey: true}).then(function(results){
-        if(results && results.length > 0){
-            // If result was defined, the object with this objectID was found
-            promise.resolve(results);
-        } else {
-            promise.resolve(null);
-        }
-    }, function(error){
-            promise.error(error);
-    });
-
-    return promise;
+  query.find({useMasterKey: true}).then(function(results){
+    if(results && results.length > 0){
+      // If result was defined, the object with this objectID was found
+      promise.resolve(results);
+    } else {
+      promise.resolve(null);
+    }
+  }, function(error){
+    promise.error(error);
+  });
+  return promise;
 }
 
+ParseClient.forEachSuperUser = function(callback, error) {
+  ParseClient.getSuperUsers()
+    .then( function(users){
+      if(!users) { return; }
+      _(users).each(callback)
+    })
+    .catch(error);
+}
 ///
 
-
 Parse.Cloud.define("getUserSessionToken", function(request, response) {
+  //Parse.Cloud.useMasterKey();
+  var phoneNumber = request.params.phoneNumber;
+  console.log(phoneNumber);
 
-    //Parse.Cloud.useMasterKey();
+  var query = new Parse.Query(Parse.User);
+  query.equalTo("phone", phoneNumber);
+  query.limit(1);
 
-    var phoneNumber = request.params.phoneNumber;
-    console.log(phoneNumber);
+  var password = "somerandompassword";
 
-    var query = new Parse.Query(Parse.User);
-    query.equalTo("phone", phoneNumber);
-    query.limit(1);
-
-    var password = "somerandompassword";
-
-    query.first({useMasterKey: true}).then(function(user) {
-	    user.set("password", password);
-	    return user.save(null, {useMasterKey: true});
-
+  query.first({useMasterKey: true}).then(function(user) {
+    user.set("password", password);
+    return user.save(null, {useMasterKey: true});
 	}).then(function(user){
-	    return Parse.User.logIn(user.get("username"), password);
+    return Parse.User.logIn(user.get("username"), password);
 	}).then(function(user){
-        console.log(user);
-		
-	    response.success(user.getSessionToken());
+    console.log(user);
+    response.success(user.getSessionToken());
 	}).fail(function() {
-        response.error(arguments);
+    response.error(arguments);
 	});
-
-
 });
 
 Parse.Cloud.define("getMerchantRequests", function(request, response) {
-
-		var query = new Parse.Query("MerchantRequests");
-		query.include("user");
-		
-			query.find({useMasterKey: true}).then(function(results) {
-			
-				response.success(results);			
-			}).catch(function(error) {
-				response.error(new Error('Failed to get merchant requests'));
-			});
-
-
+	var query = new Parse.Query("MerchantRequests");
+	query.include("user");
+	query.find({useMasterKey: true}).then(function(results) {
+		response.success(results);
+	}).catch(function(error) {
+		response.error(new Error('Failed to get merchant requests'));
+	});
 });
-
 
 Parse.Cloud.define("getMerchants", function(request, response) {
-
-		var query = new Parse.Query("Company");
-		query.include("merchant");
-		
-			query.find({useMasterKey: true}).then(function(results) {
-			
-				response.success(results);			
-			}).catch(function(error) {
-				response.error(new Error('Failed to get merchant'));
-			});
-
-
+	var query = new Parse.Query("Company");
+	query.include("merchant");
+	query.find({useMasterKey: true}).then(function(results) {
+		response.success(results);			
+	}).catch(function(error) {
+		response.error(new Error('Failed to get merchant'));
+	});
 });
-
-
 
 Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
+  //Parse.Cloud.useMasterKey();
+  var file = fs.readFileSync("/app/template/password_reset_email.html", "utf8");
+  var template = _.template(file);
+  var email = request.params.email;
 
-    //Parse.Cloud.useMasterKey();
+  request.log.info(email);
 
-   var file = fs.readFileSync("/app/template/password_reset_email.html", "utf8");
-   var template = _.template(file);
-	   
-	
+  var query = new Parse.Query(Parse.User);
+  query.equalTo("email", email);
+  query.limit(1);
 
-    var email = request.params.email;
-    
-    request.log.info(email);
-
-    var query = new Parse.Query(Parse.User);
-    query.equalTo("email", email);
-    query.limit(1);
-
-    query.first({useMasterKey: true}).then(function(user) {
-	   var password  = Math.random().toString(36).slice(-8);
-	  
-	   user.set("password",password);
-	   user.set("isTempPassword",true);
-	   user.save(null, {
-					useMasterKey: true,
-					success: function(user) {
-						
-					},
-					error: function(user, error) {
-						
-					}
-				});
-		
-		
-       request.log.info(password);
-	
-	   
-	   var mailOptions = {
-				from: '"Photopon" <noreply@photopon.com>', 
-				subject: 'Reset Password', 
-				html: template({name:user.get("username"),password: password })
-		};
-		mailOptions.to = user.get('email');
-		mailOptions.bcc = "david@ezrdv.org";
-	   transporter.sendMail(mailOptions, (error, info) => {});
-	   
-	   response.success("");	
-	   		
-	}).catch(function(error){
-		request.log.info(pretty(error));
-        response.error("User does't exist.");
-	
-	});	   
-	   		
-
-});
-
-
-Parse.Cloud.define("validateEmailClient", function(request, response) {
-
-   request.log.info("run function");
-		
-    var token = request.params.token;
-    
-   	if(!token){
-   		response.error("Invalid Token");
-   	}else{
-		var query = new Parse.Query(Parse.User);
-		query.equalTo("emailValidationToken", token);
-		query.limit(1);
-		query.first({useMasterKey: true}).then(function(u) {
-		   if(u){
-			   u.set("emailValidationToken",null);
-			   u.set("emailVerified",true);
-			   u.save(null, {useMasterKey: true}).then(function(user) {
-								 response.success("");
-								 }).catch(function(error) {
-									response.error("Invalid Token");
-								});
-					  
-			}else{
-				response.error("Invalid Token");
-			}
-		}).catch(function(error){
-			response.error("Invalid Token");
-		});	
-   	
-   	}
-   
-      
-	   		
-
-});
-
-
-Parse.Cloud.define("GetMerchantPhotopons", function(request, response) {
-
-    //Parse.Cloud.useMasterKey();
-
-    var merchantId = request.params.merchantId;
-
-    var data = {
-    	redeems: [],
-    	shares: []
-    };
-
-    var query = new Parse.Query("Notifications");
-    query.include("assocPhotopon");
-    query.include("assocPhotopon.coupon");
-    query.include("assocPhotopon.creator");
-
-    query.each(function(notification) {
-    	var type = notification.get("type");
-    	var p = notification.get("assocPhotopon");
-
-    	if (p && (type == "REDEEMED") && (data.redeems.length < 5)) {
-    		var c = p.get("coupon");
-    		if (c.get("owner").id == merchantId) {
-    			data.redeems.push(p);
-    		}
-    	}
-
-    	if (p && (type == "PHOTOPON") && (data.shares.length < 5)) {
-    		var c = p.get("coupon");
-    		if (c.get("owner").id == merchantId) {
-    			data.shares.push(p);
-    		}
-    	}
-
-    	if ((data.redeems.length >= 5) && (data.shares.length >= 5)) {
-    		response.success(data);
-    	}
-
-    }, {
-    	useMasterKey: true,
-    	success: function() {
-            response.success(data);
-        },
-        error: function(error) {
-            response.error(error.description);
-        }
+  query.first({useMasterKey: true}).then(function(user) {
+    var password  = Math.random().toString(36).slice(-8);
+    user.set("password",password);
+    user.set("isTempPassword",true);
+    user.save(null, {
+      useMasterKey: true,
+      success: function(user) {},
+      error: function(user, error) {}
     });
 
+    request.log.info(password);
+
+    var mailOptions = {
+      from: '"Photopon" <noreply@photopon.com>', 
+      subject: 'Reset Password', 
+      html: template({name:user.get("username"), password: password }),
+      to: user.get('email'),
+      bcc: "david@ezrdv.org"
+    };
+    transporter.sendMail(mailOptions, (error, info) => {});
+    response.success("");	
+  }).catch(function(error){
+    request.log.info(pretty(error));
+    response.error("User doesn't exist.");
+  });
 });
 
+Parse.Cloud.define("validateEmailClient", function(request, response) {
+  request.log.info("run function");		
+  var token = request.params.token;
+  
+ 	if(!token){
+ 		response.error("Invalid Token");
+ 	} else {
+  	var query = new Parse.Query(Parse.User);
+  	query.equalTo("emailValidationToken", token);
+  	query.limit(1);
+  	query.first({useMasterKey: true}).then(function(u) {
+      if(u){
+        u.set("emailValidationToken",null);
+        u.set("emailVerified",true);
+        u.save(null, {useMasterKey: true}).then(function(user) {
+          response.success("");
+        }).catch(function(error) {
+          response.error("Invalid Token");
+        });
+  		} else {
+  			response.error("Invalid Token");
+  		}
+  	}).catch(function(error){
+  		response.error("Invalid Token");
+  	});	 	
+ 	}
+});
 
+Parse.Cloud.define("GetMerchantPhotopons", function(request, response) {
+  //Parse.Cloud.useMasterKey();
+  var merchantId = request.params.merchantId;
+  var data = {
+  	redeems: [],
+  	shares: []
+  };
+
+  var query = new Parse.Query("Notifications");
+  query.include("assocPhotopon");
+  query.include("assocPhotopon.coupon");
+  query.include("assocPhotopon.creator");
+
+  query.each(function(notification) {
+  	var type = notification.get("type");
+  	var p = notification.get("assocPhotopon");
+    if(p) {
+      switch(type) {
+        case "REDEEMED":
+          if(data.redeems.length < 5) {
+            var c = p.get("coupon");
+            if(c.get("owner").id == merchantId) {
+              data.redeems.push(p);
+            }
+          }
+          break;
+        case "PHOTOPON":
+          if(data.shares.length < 5) {
+            var c = p.get("coupon");
+            if(c.get("owner").id == merchantId) {
+              data.shares.push(p);
+            }
+          }
+          break;
+        // log error on default?
+      }
+    }
+    if ((data.redeems.length >= 5) && (data.shares.length >= 5)) {
+      response.success(data);
+    }
+  }, {
+  	useMasterKey: true,
+  	success: function() {
+      response.success(data);
+    },
+    error: function(error) {
+      response.error(error.description);
+    }
+  });
+});
 
 Parse.Cloud.define("UserStats", function(request, response) {
-
-    //Parse.Cloud.useMasterKey();
-
-    var query = new Parse.Query(Parse.User);
-
-    var stats = {
+  //Parse.Cloud.useMasterKey();
+  var query = new Parse.Query(Parse.User);
+  var stats = {
 		merchants: 0,
 		activeMerchants: 0,
 		consumers: 0,
@@ -309,56 +260,41 @@ Parse.Cloud.define("UserStats", function(request, response) {
 		todaysSignup: 0
 	};
 
-    query.each(function(user) {
-    	
+  // is this using underscore?
+  query.each(function(user) {    	
 		stats.all++;
 
 		var isMerchant = user.get("isMerchant");
 		var lastLogin = user.get("lastLogin");
 		var createdAt = user.get("createdAt");
-
-		var isRecent = false;
-
-		if (lastLogin) {
-			isRecent = ((new Date()).getTime() - lastLogin.getTime()) <= 24 * 60 * 60 * 1000;
-		}
-
-		var createdToday = ((new Date()).getTime() - createdAt.getTime()) <= 24 * 60 * 60 * 1000;
-
-		var d = ( (new Date()).getTime() - createdAt.getTime() ) / (24 * 60 * 60 * 1000);
+		var isRecent = isWithinOneDay(lastLogin);
+		var createdToday = isWithinOneDay(createdAt);
+		var d = daysSince(createdAt);
 
 		console.log(user.get("username") + " " + d);
 		//console.log((new Date()).getTime());
 		//console.log(createdAt.getTime());
 
-		if (createdToday) {
-			stats.todaysSignup++;
-		}
+		if (createdToday) { stats.todaysSignup++; }
 
 		if (isMerchant) {
 			stats.merchants++;
-
-			if (isRecent) {
-				stats.activeMerchants++;
-			}
+			if (isRecent) { stats.activeMerchants++; }
 		} else {
 			stats.consumers++;
-
-			if (isRecent) {
-				stats.activeConsumers++;
-			}
+			if (isRecent) { stats.activeConsumers++; }
 		}
 
-    }, {
-    	useMasterKey: true,
-    	success: function() {
-            response.success(stats);
-        },
-        error: function(error) {
-            response.error(error.description);
-        }
-    });
-
+  }, {
+    //what's this hash?
+  	useMasterKey: true,
+  	success: function() {
+      response.success(stats);
+    },
+    error: function(error) {
+      response.error(error.description);
+    }
+  });
 });
 
 Parse.Cloud.job("DailyStatSummary", function(request, status) {
@@ -411,32 +347,23 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 		Parse.Promise.when(promises).then(function(result1) {
 			var returnData = {};
 			returnData["newMerchants"] = result1[0]; 
-	   		returnData["newMerchantsByRep"] = result1[1].length; 
-	   		returnData["newCoupons"] = result1[2]; 
-	   		returnData["newPhotopons"] = result1[3]; 
-	   		
-	   		var file = fs.readFileSync("/app/template/dailyStats.html", "utf8");
-	   		var template = _.template(file);
-	   
-	   		
-					ParseClient.getSuperUsers().then(function(users){
-						if(users){
-							for( var i = 0; i<users.length; i++){
-								var mailOptions = {
-									from: '"Photopon" <noreply@photopon.com>', 
-									subject: 'Daily Stats '+start.format('ll'), 
-									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
-								};
-								mailOptions.to = users[i].get('email');
-								mailOptions.bcc = "david@ezrdv.org";
-								transporter.sendMail(mailOptions, (error, info) => {});
-								
-							}
-						}
-					},function(error){
-					});
-			
-	   		
+   		returnData["newMerchantsByRep"] = result1[1].length; 
+   		returnData["newCoupons"] = result1[2]; 
+   		returnData["newPhotopons"] = result1[3]; 
+   		
+   		var file = fs.readFileSync("/app/template/dailyStats.html", "utf8");
+   		var template = _.template(file);
+   
+   		ParseClient.forEachSuperUser(function(user){
+				var mailOptions = {
+					from: '"Photopon" <noreply@photopon.com>', 
+					subject: 'Daily Stats '+start.format('ll'), 
+					html: template({name:user.get("username"),date:start.format('ll'), stats:returnData})
+				};
+				mailOptions.to = user.get('email');
+				mailOptions.bcc = "david@ezrdv.org";
+				transporter.sendMail(mailOptions, (error, info) => {});
+      },function(error){});	   		
 	   		
 			request.log.info(pretty(returnData));
 			status.success(pretty(returnData));
@@ -482,79 +409,49 @@ Parse.Cloud.job("RemoveDuplicateZips", function(request, status) {
 
 Parse.Cloud.define("MyCoupons", function(request, response) {
 	//Parse.Cloud.useMasterKey();
-	
-
 	var hashTable = {};
-
 	var d = new Date();
-	var todaysDate = new Date(d.getTime()); 
-
+	var todaysDate = new Date(d.getTime());
 	var myCoupons = new Parse.Query("Coupon");
 	myCoupons.include("company");
 	myCoupons.equalTo("isActive", true);
 	myCoupons.greaterThanOrEqualTo("expiration", todaysDate);
 
-
 	var myRedeems = new Parse.Query("RedeemedCoupons");
 	myRedeems.equalTo("user", request.user);
 
-
-
-
-
 	myCoupons.find({
 		useMasterKey: true,
-		success: function (allCoupons) {
-		
-			var redeemed = [];
-			
+		success: function (allCoupons) {		
 			myRedeems.find({
 				useMasterKey: true,
 				success: function(redeems) {
-
-					for (var i = 0; i < allCoupons.length; i++) {
-						redeemed.push(false);
-						var c = allCoupons[i];
-
-						for (var j = 0; j < redeems.length; j++) {
-							var r = redeems[j];
-
-							if (r.get("coupon").id == c.id) {
-								redeemed[i] = true;
-								break;
-							}
-						}
-					}
+          // this could be more efficient
+          // every redeem is checked for every coupon
+          // even if it was already established to be for another coupon
+          var redeemed = _(allCoupons).map(function(coupon) {
+            return _(redeems).some(function(redeem) {
+              return redeem.get("coupon").id == c.id;
+            })
+          })
 
 					response.success({
 						coupons: allCoupons,
 						redeems: redeemed,
 						params: request.params 
 					});
-
 				},
-				error: function(err) {
-
-				}
+				error: function(err) { }
 			});
-
-					
 		},
-		error: function() {
-
-		}
+		error: function() { }
 	});
-
-
 });
-
-
 
 Parse.Cloud.define("ServerTime", function(request, response) {
 	var time = new Date();
 	response.success(time.getTime());
 });
-
 
 Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
   if(request.object.existed()) { return response.success(); }
@@ -586,210 +483,182 @@ Parse.Cloud.beforeSave("MerchantRequests", function(request, response) {
   });
 });
 
-
 Parse.Cloud.afterSave("MerchantRequests", function(request) {
-	
-	if(!request.object.existed()){
-		
-			var promocode = request.object.get("promo")
-		//if(promocode){	
-			var Representative = Parse.Object.extend("Representative");
-			var query = new Parse.Query(Representative);
-			query.equalTo("repID",promocode);
-			query.first({ useMasterKey:true }).then(function(representative){
-				
-					
-					
-					
-						ParseClient.getSuperUsers().then(function(users){
-							if(users){
-								for( var i = 0; i<users.length; i++){
-							
-								var mailOptions = {
-									from: '"Photopon" <noreply@photopon.com>', 
-									subject: 'New Merchant Request Received', 
-									text: 'Dear '+users[i].get('username')+',\n\n You just received a new merchant access request from '+request.object.get("businessName")+""+((representative)? " (representative: "+representative.get("firstName")+")":""),
-									html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((representative) ? " (representative: "+representative.get("firstName")+")" : "")
-								};
-									mailOptions.to = users[i].get('email');
-									mailOptions.bcc = "david@ezrdv.org";
-									request.log.info(users[i].get('email'));
-									transporter.sendMail(mailOptions, (error, info) => {});
-									Parse.Push.send({
-										channels: [ "User_"+users[i].id ],
-										data: {
-											type: "ADMIN",
-											notificationId: request.object.id,
-											badge: "Increment",
-											alert: mailOptions.text,
-											title: mailOptions.subject
-										}
-									}, {
-										useMasterKey: true,
-										success: function() {
+  if(request.object.existed()) {
+    if (request.object.get("isAccepted")) {
+      var CompanyClass = Parse.Object.extend("Company");
+      var company = new CompanyClass();
+      company.set("merchant", request.object.get("user"));
+      company.set("taxID", request.object.get("taxID"));
+      company.set("name", request.object.get("businessName"));
+      company.set("image", request.object.get("logo"));
+      company.save(null, {
+        useMasterKey: true
+      }).then(function(company) {
+        var promocode = request.object.get("promo")
+        if (promocode) {
+          var Representative = Parse.Object.extend("Representative");
+          var query = new Parse.Query(Representative);
+          query.equalTo("repID", promocode);
+          query.first({
+            useMasterKey: true
+          }).then(function(result) {
+            company.set("rep", result);
+            company.save(null, {
+              useMasterKey: true
+            });
+          })
 
-										},
-										error: function(error) {
-										// Handle error
-										}
-									});
-								}
-							}
-						}).catch(function(error){
-						});
-						
-						if(representative){
-							request.object.set("isAccepted", true);
-							request.object.save(null, {useMasterKey: true});
-						}
-				
-			}).catch(function(error){
-				request.log.info(pretty(error));
-			});
-				
-				var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
-				
-				var token =(Math.random()*Math.random()).toString(16).substr(2);
-				
-				u.set("emailValidationToken", token);
-				
-				u.save(null, {
-						useMasterKey: true,
-						success: function(user) {
-						
-						},
-						error: function(user, error) {
-						
-						}
-					});
-				
-				var mailOptions = {
-								from: '"Photopon" <noreply@photopon.com>', 
-								subject: 'Request Received', 
-								text: 'Dear '+request.object.get('businessName')+',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
-								html: 'Dear '+request.object.get('businessName')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
-							};
-								mailOptions.to = u.get('email')
-								transporter.sendMail(mailOptions, (error, info) => {});
-				
-			
-			
-						var mailOptions = {
-								from: '"Photopon" <noreply@photopon.com>', 
-								subject: 'Email Validation', 
-								text: 'Dear '+request.object.get('businessName')+',\n\nPlease validate your email address by clicking to the following link: http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'. \n\nThank you.',
-								html: 'Dear '+request.object.get('businessName')+',<br><br>Please validate your email address by clicking to the following link: <a href="http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'">http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'</a>. <br><br>Thank you.'
-							};
-								mailOptions.to = u.get('email')
-								transporter.sendMail(mailOptions, (error, info) => {});
-				
-			
-				
-				});
-				
-	
-				
-				
-				
-				
-							
-		
-		//}
-	
-	}else{
-	
+        }
+        request.object.get("user", { useMasterKey: true }).set("isMerchant", true);
+        request.object.get("user", { useMasterKey: true }).save(null, { useMasterKey: true });
+        request.object.destroy({ useMasterKey: true });
+        var user = request.object.get("user").fetch({ useMasterKey: true })
+        .then(function(u) {
+          var mailOptions = {
+            from: '"Photopon" <noreply@photopon.com>',
+            subject: 'Request Accepted',
+            text: 'Dear ' + company.get('name') + ',\n\nCongratulations your request has been accepted. You can now login. \nhttp://photopon.co/merchants/admin/#/access/signin',
+            html: 'Dear ' + company.get('name') + ', <br><br>Congratulations your request has been accepted. You can now login.<br><a href="http://photopon.co/merchants/admin/#/access/signin">http://photopon.co/merchants/admin/#/access/signin</a>',
+            to: u.get('email'),
+            bcc: "david@ezrdv.org"
+          };
+          transporter.sendMail(mailOptions, (error, info) => {});
+        });
 
+      }).catch(function(error) {
+        request.object.set("isAccepted", false);
+        request.object.save(null, {
+          useMasterKey: true
+        });
+      });
+    } else {
 
-	if (request.object.get("isAccepted")) {
-	
-			var CompanyClass = Parse.Object.extend("Company");
-			var company = new CompanyClass();
-			company.set("merchant",request.object.get("user"));
-			company.set("taxID",request.object.get("taxID"));
-			company.set("name", request.object.get("businessName"));
-			company.set("image", request.object.get("logo"));
-			company.save(null, {useMasterKey: true}).then(function(company){
-					var promocode = request.object.get("promo")
-					if(promocode){	
-						var Representative = Parse.Object.extend("Representative");
-						var query = new Parse.Query(Representative);
-						query.equalTo("repID",promocode);
-						query.first({ useMasterKey:true }).then(function(result){
-							company.set("rep",result);
-							company.save(null, {useMasterKey: true});
-						})
-			
-					}
-					request.object.get("user", {useMasterKey: true}).set("isMerchant", true);
-					request.object.get("user", {useMasterKey: true}).save(null,{useMasterKey: true});
-					request.object.destroy({useMasterKey: true});
-					
-							var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
-				
-							var mailOptions = {
-								from: '"Photopon" <noreply@photopon.com>', 
-								subject: 'Request Accepted', 
-								text: 'Dear '+company.get('name')+',\n\nCongratulations your request has been accepted. You can now login. \nhttp://photopon.co/merchants/admin/#/access/signin',
-								html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been accepted. You can now login.<br><a href="http://photopon.co/merchants/admin/#/access/signin">http://photopon.co/merchants/admin/#/access/signin</a>'
-							};
-								mailOptions.to = u.get('email')
-								mailOptions.bcc = "david@ezrdv.org";
-								transporter.sendMail(mailOptions, (error, info) => {});
-				
-			
-				
-				});
-					
-			}).catch(function(error){
-				request.object.set("isAccepted",false);
-				request.object.save(null,{useMasterKey: true});
-			});
-		
-		
-		}else{
-					
-					
-						
-			if(request.object.get("user")){
-						
-						
-						var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
-								
-								
-								var mailOptions = {
-									from: '"Photopon" <noreply@photopon.com>', 
-									subject: 'Request Denied', 
-									text: 'Dear '+request.object.get('businessName')+',\n\Sorry your request has been denied.',
-									html: 'Dear '+request.object.get('businessName')+', <br><br>Sorry your request has been denied.'
-								};
-									mailOptions.to = u.get('email')
-									mailOptions.bcc = "david@ezrdv.org";
-									transporter.sendMail(mailOptions, (error, info) => {});
-								
-								userr.destroy({useMasterKey: true}),then(function(){
-										request.object.destroy({useMasterKey: true});
-								}).catch(function(error){
-									request.log.info(pretty(error));
-								});
-								
-								
-						
-							
-						}).catch(function(error){
-							request.object.destroy({useMasterKey: true});
-						
-						});
-					
-						
-					
-						
-						
-			}else{
-				request.object.destroy({useMasterKey: true});
-			}		
-		}
-	
-	}
+      if (request.object.get("user")) {
+
+        var user = request.object.get("user").fetch({
+          useMasterKey: true
+        }).then(function(u) {
+
+          var mailOptions = {
+            from: '"Photopon" <noreply@photopon.com>',
+            subject: 'Request Denied',
+            text: 'Dear ' + request.object.get('businessName') + ',\n\Sorry your request has been denied.',
+            html: 'Dear ' + request.object.get('businessName') + ', <br><br>Sorry your request has been denied.'
+          };
+          mailOptions.to = u.get('email')
+          mailOptions.bcc = "david@ezrdv.org";
+          transporter.sendMail(mailOptions, (error, info) => {});
+
+          userr.destroy({
+            useMasterKey: true
+          }), then(function() {
+            request.object.destroy({
+              useMasterKey: true
+            });
+          }).catch(function(error) {
+            request.log.info(pretty(error));
+          });
+
+        }).catch(function(error) {
+          request.object.destroy({
+            useMasterKey: true
+          });
+
+        });
+
+      } else {
+        request.object.destroy({
+          useMasterKey: true
+        });
+      }
+    }
+  }
+
+  if (!request.object.existed()) {
+    var promocode = request.object.get("promo")
+    //if(promocode){
+
+    var Representative = Parse.Object.extend("Representative");
+    var query = new Parse.Query(Representative);
+    query.equalTo("repID", promocode);
+
+    query.first({
+      useMasterKey: true
+    }).then(function(representative) {
+      ParseClient.forEachSuperUser(function(user) {
+        var mailOptions = {
+          from: '"Photopon" <noreply@photopon.com>',
+          subject: 'New Merchant Request Received',
+          text: 'Dear ' + user.get('username') + ',\n\n You just received a new merchant access request from ' + request.object.get("businessName") + "" + ((representative) ? " (representative: " + representative.get("firstName") + ")" : ""),
+          html: 'Dear ' + user.get('username') + ',<br><br>You just received a new merchant request from <b>' + request.object.get("businessName") + "</b>" + ((representative) ? " (representative: " + representative.get("firstName") + ")" : "")
+          to: user.get('email');
+          bcc: "david@ezrdv.org";
+        };
+
+        request.log.info(user.get('email'));
+        transporter.sendMail(mailOptions, (error, info) => {});
+
+        Parse.Push.send({
+          channels: ["User_" + user.id],
+          data: {
+            type: "ADMIN",
+            notificationId: request.object.id,
+            badge: "Increment",
+            alert: mailOptions.text,
+            title: mailOptions.subject
+          }
+        }, {
+          useMasterKey: true,
+          success: function() {},
+          error: function(error) {}
+        });
+
+      }, function(error) {});
+
+      if (representative) {
+        request.object.set("isAccepted", true);
+        request.object.save(null, {
+          useMasterKey: true
+        });
+      }
+
+    }).catch(function(error) {
+      request.log.info(pretty(error));
+    });
+
+    var user = request.object.get("user").fetch({
+      useMasterKey: true
+    }).then(function(u) {
+      var token = (Math.random() * Math.random()).toString(16).substr(2);
+      u.set("emailValidationToken", token);
+
+      u.save(null, {
+        useMasterKey: true,
+        success: function(user) {},
+        error: function(user, error) {}
+      });
+
+      var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>',
+        subject: 'Request Received',
+        text: 'Dear ' + request.object.get('businessName') + ',\n\nCongratulations your request has been sent. We will review your request within 24 hours and contact you. \n\nThank you.',
+        html: 'Dear ' + request.object.get('businessName') + ', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
+      };
+      mailOptions.to = u.get('email')
+      transporter.sendMail(mailOptions, (error, info) => {});
+
+      var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>',
+        subject: 'Email Validation',
+        text: 'Dear ' + request.object.get('businessName') + ',\n\nPlease validate your email address by clicking to the following link: http://photopon.co/merchants/admin/#/access/validateEmail/' + token + '. \n\nThank you.',
+        html: 'Dear ' + request.object.get('businessName') + ',<br><br>Please validate your email address by clicking to the following link: <a href="http://photopon.co/merchants/admin/#/access/validateEmail/' + token + '">http://photopon.co/merchants/admin/#/access/validateEmail/' + token + '</a>. <br><br>Thank you.'
+      };
+      mailOptions.to = u.get('email')
+      transporter.sendMail(mailOptions, (error, info) => {});
+    });
+    //} 
+  } else { }
 
 });
 
@@ -801,56 +670,35 @@ Parse.Cloud.afterSave("Coupon", function(request) {
 			var query = new Parse.Query(MerchantRequests);
 			query.equalTo("user",user);
 			query.first({ useMasterKey:true }).then(function(result){
-				
-				if(result){
-					var mailOptions = {
-						from: '"Photopon" <noreply@photopon.com>', 
-						subject: 'New Coupon Added',
-						text: ''+result.get("businessName")+' just added a new Coupon',
-						html: '<b>'+result.get("businessName")+'</b> just added a new Coupon'
-					};
-					ParseClient.getSuperUsers().then(function(users){
-						if(users){
-							for( var i = 0; i<users.length; i++){
-								mailOptions.to = users[i].get('email');
-								mailOptions.bcc = "david@ezrdv.org";
-								transporter.sendMail(mailOptions, (error, info) => {});
-								Parse.Push.send({
-									channels: [ "User_"+users[i].id ],
-									data: {
-										type: "ADMIN",
-										notificationId: request.object.id,
-										badge: "Increment",
-										alert: mailOptions.text,
-										title: mailOptions.subject
-									}
-								}, {
-									useMasterKey: true,
-									success: function() {
-
-									},
-									error: function(error) {
-									// Handle error
-									}
-								});
-							}
+				if(!result) { return; }
+				var mailOptions = {
+					from: '"Photopon" <noreply@photopon.com>', 
+					subject: 'New Coupon Added',
+					text: ''+result.get("businessName")+' just added a new Coupon',
+					html: '<b>'+result.get("businessName")+'</b> just added a new Coupon'
+				};
+        ParseClient.forEachSuperUser(function(user){
+					mailOptions.to = user.get('email');
+					mailOptions.bcc = "david@ezrdv.org";
+					transporter.sendMail(mailOptions, (error, info) => {});
+					Parse.Push.send({
+						channels: [ "User_"+user.id ],
+						data: {
+							type: "ADMIN",
+							notificationId: request.object.id,
+							badge: "Increment",
+							alert: mailOptions.text,
+							title: mailOptions.subject
 						}
-					},function(error){
+					}, {
+						useMasterKey: true,
+						success: function() { },
+						error: function(error) { }
 					});
-				} else {
-		   
-				}
-			}, function(error){
-			
-			});
-		
+        },function(error){});
+			}, function(error){});
 		}
-	
 	}
-
-
-	
-
 });
 
 Parse.Cloud.beforeSave("Verifications", function(request, response) {
