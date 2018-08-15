@@ -23,7 +23,7 @@ var api = new ParseServer({
   },
   push: {
 	  ios: {
-		  pfx: '/app/privateparse/prod.p12',
+		  pfx: __dirname + '/privateparse/prod.p12',
 		  passphrase: '$Photopon18', // optional password to your p12/PFX
 		  bundleId: 'com.photopon.Photopon',
 		  production: false
