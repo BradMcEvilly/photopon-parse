@@ -53,8 +53,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
           from: '"Photopon" <noreply@photopon.com>', 
           subject: 'Daily Stats '+start.format('ll'), 
           html: template({name:user.get("username"), date:start.format('ll'), stats:returnData}),
-          to: user.get("email"),
-          bcc: "david@ezrdv.org"
+          to: user.get("email")
         };
         Mailer.send(mailOptions);
       });       

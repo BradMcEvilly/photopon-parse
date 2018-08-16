@@ -23,7 +23,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                   html: 'Dear '+users[i].get('username')+',<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((representative) ? " (representative: "+representative.get("firstName")+")" : "")
                 };
                   mailOptions.to = users[i].get('email');
-                  mailOptions.bcc = "david@ezrdv.org";
                   request.log.info(users[i].get('email'));
                   Mailer.send(mailOptions);
                   Parse.Push.send({
@@ -144,7 +143,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                 html: 'Dear '+company.get('name')+', <br><br>Congratulations your request has been accepted. You can now login.<br><a href="http://photopon.co/merchants/admin/#/access/signin">http://photopon.co/merchants/admin/#/access/signin</a>'
               };
                 mailOptions.to = u.get('email')
-                mailOptions.bcc = "david@ezrdv.org";
                 Mailer.send(mailOptions);
         
       
@@ -174,7 +172,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                   html: 'Dear '+request.object.get('businessName')+', <br><br>Sorry your request has been denied.'
                 };
                   mailOptions.to = u.get('email')
-                  mailOptions.bcc = "david@ezrdv.org";
                   Mailer.send(mailOptions);
                 
                 userr.destroy({useMasterKey: true}),then(function(){

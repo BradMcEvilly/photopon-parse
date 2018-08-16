@@ -9,8 +9,7 @@ Mailer.reset_password = function(user, password) {
     subject: 'Reset Password',
     // TODO: plain text template
     html: template({ name: user.get("username"), password: password }),
-    to: user.get('email'),
-    // bcc: "david@ezrdv.org"
+    to: user.get('email')
   };
   Mailer.send(mailOptions);
 }

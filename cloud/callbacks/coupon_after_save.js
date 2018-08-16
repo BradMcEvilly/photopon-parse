@@ -18,8 +18,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
           from: '"Photopon" <noreply@photopon.com>', 
           subject: 'New Coupon Added',
           text: ''+result.get("businessName")+' just added a new Coupon',
-          html: '<b>'+result.get("businessName")+'</b> just added a new Coupon',
-          bcc: "david@ezrdv.org"
+          html: '<b>'+result.get("businessName")+'</b> just added a new Coupon'
         };
         ParseClient.eachSuperUser(function(user){
           mailOptions.to = user.get('email');
