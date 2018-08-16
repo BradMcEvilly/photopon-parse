@@ -16,8 +16,9 @@ Parse.Cloud.define("UserStats", function(request, response) {
     var lastLogin = user.get("lastLogin");
     var createdAt = user.get("createdAt");
     var isRecent = Utils.isWithinOneDay(lastLogin);
-    var createdToday = Utils.usWithinOneDay(createdAt);
+    var createdToday = Utils.isWithinOneDay(createdAt);
     var d = Utils.daysSince(createdAt);
+
 
     console.log("[USER STATS] "+user.get("username") + " " + d);
 
@@ -33,6 +34,7 @@ Parse.Cloud.define("UserStats", function(request, response) {
   }, {
     useMasterKey: true,
     success: function() {
+
       response.success(stats);
     },
     error: function(error) {

@@ -65,6 +65,20 @@ ParseClient.eachSuperUser = function(callback) {
   });
 }
 
+ParseClient.notifySuperUsers = function(mailOptions) {
+  ParseClient.getSuperUsers().then(function(users) {
+    if(!users) { logger.error("[ERROR HUH?] failed to get superusers"); return; }
+    var superEmails = _(users).map(function(su) {
+      return su.get('email');
+    });
+    var superChannels = _(users).map(function(su) {
+      return "User_"+su.id;
+    });
+  }, function(error) {
+    logger.error("[ERROR] failed to get superusers");
+  });
+}
+
 _(['callbacks','functions','jobs']).each(function(folder){
   var dir = path.join(__dirname,folder);
   _(fs.readdirSync(dir)).each(function(file){

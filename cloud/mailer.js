@@ -11,6 +11,7 @@ const logger = require('parse-server').logger;
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
+const _ = require("underscore");
 
 var transporter = nodemailer.createTransport({
         host: process.env.MAILGUN_SMTP_SERVER,
@@ -32,6 +33,11 @@ Mailer = {
         logger.info("[mail ok] sent "+Utils.pretty(info));
       }
     });
+  },
+  readTemplate: function(filename) {
+    // TODO: memoize template for reuse
+    var file = fs.readFileSync(path.join(process.env.PWD, "template", filename), "utf8");
+    return _.template(file);
   }
 }
 

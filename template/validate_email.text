@@ -1,0 +1,10 @@
+Dear <%= name %>,
+
+Please validate your email address by clicking the following link: 
+
+<%= url %>
+
+Thank you.
+
+
+Photopon Team

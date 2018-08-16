@@ -1,0 +1,10 @@
+Dear <%= name %>,
+
+Congratulations, your request has been accepted. You can now login.
+
+<%= url %>
+
+Thank you.
+
+
+Photopon Team
