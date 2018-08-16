@@ -75,8 +75,8 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
       
         
         
-      request.log.info(pretty(returnData));
-      status.success(pretty(returnData));
+      request.log.info(Utils.pretty(returnData));
+      status.success(Utils.pretty(returnData));
 
     }, function(error) {
       status.error((error));

@@ -1,7 +1,14 @@
-///Custom Functions
-function pretty(object) {
-  return JSON.stringify(object, null, 2);
-}
+//  ____  _           _
+// |  _ \| |__   ___ | |_ ___  _ __   ___  _ __
+// | |_) | '_ \ / _ \| __/ _ \| '_ \ / _ \| '_ \
+// |  __/| | | | (_) | || (_) | |_) | (_) | | | |
+// |_|   |_| |_|\___/ \__\___/| .__/ \___/|_| |_|
+//  ____                      |_|___ _                 _
+// |  _ \ __ _ _ __ ___  ___   / ___| | ___  _   _  __| |
+// | |_) / _` | '__/ __|/ _ \ | |   | |/ _ \| | | |/ _` |
+// |  __/ (_| | |  \__ \  __/ | |___| | (_) | |_| | (_| |
+// |_|   \__,_|_|  |___/\___|  \____|_|\___/ \__,_|\__,_|
+
 
 //EMAIL
 var api_key = process.env.MAILGUN_API_KEY;
@@ -26,6 +33,8 @@ var MailComposer = require('nodemailer/lib/mail-composer');
 
 var path = require('path');
 var fs = require('fs');
+
+require("./utils.js");
 ///
 
 ParseClient = {}

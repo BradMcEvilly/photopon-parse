@@ -55,7 +55,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
             }
         
       }).catch(function(error){
-        request.log.info(pretty(error));
+        request.log.info(Utils.pretty(error));
       });
         
         var user = request.object.get("user").fetch({useMasterKey: true}).then(function(u){
@@ -180,7 +180,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                 userr.destroy({useMasterKey: true}),then(function(){
                     request.object.destroy({useMasterKey: true});
                 }).catch(function(error){
-                  request.log.info(pretty(error));
+                  request.log.info(Utils.pretty(error));
                 });
                 
                 
