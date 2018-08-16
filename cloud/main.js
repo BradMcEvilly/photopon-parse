@@ -9,33 +9,13 @@
 // |  __/ (_| | |  \__ \  __/ | |___| | (_) | |_| | (_| |
 // |_|   \__,_|_|  |___/\___|  \____|_|\___/ \__,_|\__,_|
 
-
-//EMAIL
-var api_key = process.env.MAILGUN_API_KEY;
-var domain = process.env.MAILGUN_DOMAIN;
-var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 var _ = require("underscore");
 var moment = require("moment");
-const nodemailer = require('nodemailer');
 var fs = require('fs');
-
-var transporter = nodemailer.createTransport({
-        host: process.env.MAILGUN_SMTP_SERVER,
-        port: process.env.MAILGUN_SMTP_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user:  process.env.MAILGUN_SMTP_LOGIN, // generated ethereal user
-            pass:  process.env.MAILGUN_SMTP_PASSWORD  // generated ethereal password
-        }
-    });
-
-var MailComposer = require('nodemailer/lib/mail-composer');
-
 var path = require('path');
-var fs = require('fs');
 
 require("./utils.js");
-///
+require("./mailer.js");
 
 ParseClient = {}
 
@@ -75,8 +55,6 @@ ParseClient.getSuperUsers = function(){
 
   return promise;
 }
-///
-
 
 _(['callbacks','functions','jobs']).each(function(folder){
   var dir = path.join(__dirname,folder);

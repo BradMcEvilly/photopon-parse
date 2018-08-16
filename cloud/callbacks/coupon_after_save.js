@@ -19,7 +19,7 @@ Parse.Cloud.afterSave("Coupon", function(request) {
               for( var i = 0; i<users.length; i++){
                 mailOptions.to = users[i].get('email');
                 mailOptions.bcc = "david@ezrdv.org";
-                transporter.sendMail(mailOptions, (error, info) => {});
+                Mailer.send(mailOptions);
                 Parse.Push.send({
                   channels: [ "User_"+users[i].id ],
                   data: {

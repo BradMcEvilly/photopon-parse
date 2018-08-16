@@ -41,7 +41,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
     };
     mailOptions.to = user.get('email');
     mailOptions.bcc = "david@ezrdv.org";
-     transporter.sendMail(mailOptions, (error, info) => {});
+     Mailer.send(mailOptions);
      
      response.success("");  
         

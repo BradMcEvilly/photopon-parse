@@ -25,7 +25,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                   mailOptions.to = users[i].get('email');
                   mailOptions.bcc = "david@ezrdv.org";
                   request.log.info(users[i].get('email'));
-                  transporter.sendMail(mailOptions, (error, info) => {});
+                  Mailer.send(mailOptions);
                   Parse.Push.send({
                     channels: [ "User_"+users[i].id ],
                     data: {
@@ -81,7 +81,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                 html: 'Dear '+request.object.get('businessName')+', <br><br>Congratulations your request has been sent. We will review your request within 24 hours and contact you. <br><br>Thank you.'
               };
                 mailOptions.to = u.get('email')
-                transporter.sendMail(mailOptions, (error, info) => {});
+                Mailer.send(mailOptions);
         
       
       
@@ -92,7 +92,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                 html: 'Dear '+request.object.get('businessName')+',<br><br>Please validate your email address by clicking to the following link: <a href="http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'">http://photopon.co/merchants/admin/#/access/validateEmail/'+token+'</a>. <br><br>Thank you.'
               };
                 mailOptions.to = u.get('email')
-                transporter.sendMail(mailOptions, (error, info) => {});
+                Mailer.send(mailOptions);
         
       
         
@@ -145,7 +145,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
               };
                 mailOptions.to = u.get('email')
                 mailOptions.bcc = "david@ezrdv.org";
-                transporter.sendMail(mailOptions, (error, info) => {});
+                Mailer.send(mailOptions);
         
       
         
@@ -175,7 +175,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
                 };
                   mailOptions.to = u.get('email')
                   mailOptions.bcc = "david@ezrdv.org";
-                  transporter.sendMail(mailOptions, (error, info) => {});
+                  Mailer.send(mailOptions);
                 
                 userr.destroy({useMasterKey: true}),then(function(){
                     request.object.destroy({useMasterKey: true});

@@ -66,7 +66,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
                 };
                 mailOptions.to = users[i].get('email');
                 mailOptions.bcc = "david@ezrdv.org";
-                transporter.sendMail(mailOptions, (error, info) => {});
+                Mailer.send(mailOptions);
                 
               }
             }
