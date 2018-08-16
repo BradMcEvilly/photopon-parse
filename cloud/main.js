@@ -84,22 +84,10 @@ ParseClient.getSuperUsers = function(){
 
 ///
 
-require('./callbacks/coupon_after_save.js');
-require('./callbacks/friends_before_save.js');
-require('./callbacks/merchant_requests_after_save.js');
-require('./callbacks/merchant_requests_before_save.js');
-require('./callbacks/notifications_after_save.js');
-require('./callbacks/photopon_before_save.js');
-require('./callbacks/verifications_before_save.js');
-require('./functions/get_merchant_photopons.js');
-require('./functions/get_merchant_requests.js');
-require('./functions/get_merchants.js');
-require('./functions/get_user_session_token.js');
-require('./functions/my_coupons.js');
-require('./functions/reset_photopon_user_client.js');
-require('./functions/server_time.js');
-require('./functions/user_stats.js');
-require('./functions/validate_email_client.js');
-require('./jobs/create_bills.js')
-require('./jobs/daily_stat_summary.js');
-require('./jobs/remove_duplicate_zips.js');
+
+_(['callbacks','functions','jobs']).each(function(folder){
+  var dir = path.join(__dirname,folder);
+  _(fs.readdirSync(dir)).each(function(file){
+    require(path.join(dir, file));
+  })
+});
