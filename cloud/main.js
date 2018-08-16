@@ -1,17 +1,9 @@
 ///Custom Functions
-
 function pretty(object) {
-
-	return JSON.stringify(object, null, 2);
-
+  return JSON.stringify(object, null, 2);
 }
 
-
-
 //EMAIL
-
-
-
 var api_key = process.env.MAILGUN_API_KEY;
 var domain = process.env.MAILGUN_DOMAIN;
 var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
@@ -31,57 +23,49 @@ var transporter = nodemailer.createTransport({
     });
 
 var MailComposer = require('nodemailer/lib/mail-composer');
- 
- 
+
 var path = require('path');
 var fs = require('fs');
 ///
 
 ParseClient = {}
 
-
 ParseClient.getCoupon = function(id){
-
 	var promise = new Parse.Promise();
 
-    var Coupon = Parse.Object.extend("Coupon");
-    var query = new Parse.Query(Coupon);
-    query.equalTo("objectId",id);
-    query.first({useMasterKey: true}).then(function(result){
-        if(result){
-            // If result was defined, the object with this objectID was found
-            promise.resolve(result);
-        } else {
-            promise.resolve(null);
-        }
-    }, function(error){
-            promise.error(error);
-    });
+  var Coupon = Parse.Object.extend("Coupon");
+  var query = new Parse.Query(Coupon);
+  query.equalTo("objectId",id);
+  query.first({useMasterKey: true}).then(function(result){
+    if(result){
+      promise.resolve(result);
+    } else {
+      promise.resolve(null);
+    }
+  }, function(error){
+    promise.error(error);
+  });
 
-    return promise;
+  return promise;
 }
-
 
 ParseClient.getSuperUsers = function(){
-
 	var promise = new Parse.Promise();
 
-    var query = new Parse.Query(Parse.User);
-    query.equalTo("isSuperUser",true);
-    query.find({useMasterKey: true}).then(function(results){
-        if(results && results.length > 0){
-            // If result was defined, the object with this objectID was found
-            promise.resolve(results);
-        } else {
-            promise.resolve(null);
-        }
-    }, function(error){
-            promise.error(error);
-    });
+  var query = new Parse.Query(Parse.User);
+  query.equalTo("isSuperUser",true);
+  query.find({useMasterKey: true}).then(function(results){
+    if(results && results.length > 0){
+      promise.resolve(results);
+    } else {
+      promise.resolve(null);
+    }
+  }, function(error){
+    promise.error(error);
+  });
 
-    return promise;
+  return promise;
 }
-
 ///
 
 
