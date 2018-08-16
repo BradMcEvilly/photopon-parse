@@ -13,6 +13,7 @@ var _ = require("underscore");
 var moment = require("moment");
 var fs = require('fs');
 var path = require('path');
+var logger = require('parse-server').logger;
 
 require("./utils.js");
 require("./mailer.js");
@@ -54,6 +55,14 @@ ParseClient.getSuperUsers = function(){
   });
 
   return promise;
+}
+
+ParseClient.eachSuperUser = function(callback) {
+  ParseClient.getSuperUsers().then(function(users) {
+    if(users) { _(users).each(callback); }
+  }, function(error) {
+    logger.error("[ERROR] failed to get superusers");
+  });
 }
 
 _(['callbacks','functions','jobs']).each(function(folder){

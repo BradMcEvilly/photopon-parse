@@ -27,9 +27,9 @@ Mailer = {
     mailOptions.from = '"Photopon" <noreply@photopon.com>';
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        logger.error("[MAIL ERROR] "+error.code)
+        logger.error("[MAIL ERROR] "+Utils.pretty(error));
       } else {
-        logger.info("[mail ok] sent "+info.messageId+" to "+info.envelope.to)
+        logger.info("[mail ok] sent "+Utils.pretty(info));
       }
     });
   }
