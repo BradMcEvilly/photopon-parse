@@ -1,19 +1,37 @@
-var logger = require('parse-server').logger;
+var _ = require("underscore");
 
 Parse.Cloud.afterSave("MerchantRequests", function(request) {
   if (!request.object.existed()) {
     var promocode = request.object.get("promo")
-      //if(promocode){  
     var Representative = Parse.Object.extend("Representative");
     var query = new Parse.Query(Representative);
     query.equalTo("repID", promocode);
     query.first({ useMasterKey: true })
       .then(function(representative) {
-        ParseClient.notifySuperUsers({
-          subject: 'New Merchant Request Received',
-          text: 'Dear Photopon Admin,\n\n We just received a new merchant access request from ' + request.object.get("businessName") + "" + ((representative) ? " (representative: " + representative.get("firstName") + ")" : ""),
-          html: 'Dear Photopon Admin,<br><br>We just received a new merchant request from <b>' + request.object.get("businessName") + "</b>" + ((representative) ? " (representative: " + representative.get("firstName") + ")" : "")
-        }, request.object.id);
+        ParseClient.eachSuperUser(function(superuser) {
+          var mailOptions = {
+            subject: 'New Merchant Request Received',
+            to: superuser.get("email"),
+            text: 'Dear Photopon Admin,\n\nYou just received a new merchant access request from '+request.object.get("businessName")+""+((representative)? " (representative: "+representative.get("firstName")+")":""),
+            html: 'Dear Photopon Admin,<br><br>You just received a new merchant request from <b>'+request.object.get("businessName")+"</b>"+((representative) ? " (representative: "+representative.get("firstName")+")" : "")
+          };
+          Mailer.send(mailOptions);
+
+          Parse.Push.send({
+            channels: "User_"+superuser.id,
+            data: {
+              type: "ADMIN",
+              notificationId: request.object.id,
+              badge: "Increment",
+              alert: mailOptions.text,
+              title: mailOptions.subject
+            }
+          }, {
+            useMasterKey: true,
+            success: function() {},
+            error: function(error) {}
+          });
+        });
 
         if (representative) {
           request.object.set("isAccepted", true);
@@ -23,6 +41,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
       .catch(function(error) {
         request.log.info(Utils.pretty(error));
       });
+
     var user = request.object.get("user")
       .fetch({ useMasterKey: true })
       .then(function(u) {
@@ -34,7 +53,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
           Mailer.validate_email(u, request.object.get('businessName'), token)
         });
       });
-    //}
+
   } else {
     if (request.object.get("isAccepted")) {
       var CompanyClass = Parse.Object.extend("Company");
