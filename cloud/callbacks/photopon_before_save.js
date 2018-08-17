@@ -30,12 +30,8 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
         if(friends){
           for (var i = 0; i < friends.length; i++) {
             var friend = new Parse.User();
-      
-      
             friend.id = friends[i];
-      
             var sh = new PerUserShareClass();
-
             sh.set("user", request.user);
             sh.set("coupon", request.object.get("coupon"));
             sh.set("friend", friend);
