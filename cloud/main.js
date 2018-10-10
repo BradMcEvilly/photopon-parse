@@ -61,7 +61,7 @@ ParseClient.getCoupon = function(id){
     return promise;
 }
 
-ParseClient.getUser =  function(userId) {
+ParseClient.getUser = function(userId) {
     var promise = new Parse.Promise();
 
     var PhotoponUser = Parse.Object.extend("User");
@@ -808,7 +808,7 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 									text: 'Dear '+request.object.get('businessName')+',\n\Sorry your request has been denied.',
 									html: 'Dear '+request.object.get('businessName')+', <br><br>Sorry your request has been denied.'
 								};
-									mailOptions.to = u.get('email')
+									mailOptions.to = u.get('email');
 									mailOptions.bcc = "brad.mcevilly@gmail.com";
 									transporter.sendMail(mailOptions, (error, info) => {});
 								
@@ -956,6 +956,8 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 		fship.equalTo("phoneId", phoneId);
 
 		console.log('before... 		ParseClient.getUser(user1).then(function(result){');
+		console.log('user1 ', user1);
+        console.log('user1 = ' + user1);
         ParseClient.getUser(user1).then(function(result){
         	console.log('ParseClient.getUser(user1).then(function(result){.... MADE IT');
             if(result){
