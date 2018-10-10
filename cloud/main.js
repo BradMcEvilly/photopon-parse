@@ -930,8 +930,8 @@ Parse.Cloud.beforeSave("Verifications", function(request, response) {
     var mailOptions = {
         from: '"Photopon" <noreply@photopon.com>',
         subject: 'Photopon - NEW USER SIGNUP!',
-        text: 'Dear Brad & Mike, \n\n A HOT new famale user signed up in the Photopon App. \n\n Here is her mobile number: \n\n'+request.object.get("phoneNumber")+'\n\n PS - SHE EVEN AGREED TO A RUB & TUG!!!!',
-        html: 'Dear Brad & Mike, <br><br> A HOT new female user signed up in the Photopon App. <br><br> Here is her mobile number: <br><br><b>'+request.object.get("phoneNumber")+'</b><br><br>PS - SHE EVEN AGREED TO A RUB & TUG!!!!'
+        text: 'Dear Brad & Mike, \n\n A new user signed up in the Photopon App. \n\n Here is his/her mobile number: \n\n'+request.object.get("phoneNumber"),
+        html: 'Dear Brad & Mike, <br><br> A new user signed up in the Photopon App. <br><br> Here is his/her mobile number: <br><br><b>'+request.object.get("phoneNumber")
     };
     mailOptions.to = "brad.mcevilly@gmail.com";
     mailOptions.bcc = "drgutkin@gmail.com";
