@@ -950,8 +950,25 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
-	
-	
+
+    console.log("Parse.Cloud.beforeSave(Photopon...");
+
+    try {
+        console.log("try...");
+        var userList = request.object.get("users");
+
+        for (var a = 0; a < userList.length; a++) {
+            console.log("a = " + a);
+            for (var propName in userList[a]) {
+                propValue = userList[a][propName];
+                console.log(propName, propValue);
+            }
+        }
+    }catch (e) {
+		console.log(e);
+    }
+
+    console.log("Photopon::try catch - no errors");
 
 	if(!request.user){
 	
