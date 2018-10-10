@@ -61,6 +61,28 @@ ParseClient.getCoupon = function(id){
     return promise;
 }
 
+ParseClient.getUser =  function(userId) {
+    var promise = new Parse.Promise();
+
+    var PhotoponUser = Parse.Object.extend("User");
+    var query = new Parse.Query(PhotoponUser);
+    query.equalTo("objectId",userId);
+    query.first().then(function(result){
+        if(result){
+            // If result was defined, the object with this objectID was found
+            promise.resolve(result);
+        } else {
+            console.log("User ID: " + userId + " was not found");
+            promise.resolve(null);
+        }
+    }, function(error){
+        console.error("Error searching for User with id: " + userId + " Error: " + error);
+        promise.error(error);
+    });
+
+    return promise;
+}
+
 
 ParseClient.getSuperUsers = function(){
 
@@ -932,6 +954,22 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 		fship.equalTo("user2", user2);
 	} else {
 		fship.equalTo("phoneId", phoneId);
+
+        ParseClient.getUser(user1).then(function(result){
+            if(result){
+                console.log(result.get("phone"));
+                var phone = result.get("phone");
+
+                ParseClient.inviteFriendSMS(phoneId, phone);
+
+            } else {
+                console.log("User with objectId: " + user1 + " was not found");
+            }
+        }, function(error){
+            console.log("Error: " + error);
+        });
+
+
 	}
 	
 	fship.find({
@@ -948,6 +986,28 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 	});
 });
 
+
+ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
+    var client = require('twilio')('AC411575f00f763f4fbaf602173db1c518', '8537400eebcb197b068110ffb552df44');
+    // Send an SMS message
+    client.sendSms({
+            to:toPhone,
+            from: '+12015100525',
+            url:'https://demo.twilio.com/welcome/sms/reply/',
+            body: 'Your friend at ' + fromPhone + ' sent you a gift using Photopon. To accept, download Photopon and verify your mobile number: https://itunes.apple.com/us/app/photopon-turn-your-photos/id545200032?mt=8'
+        }, function(err, responseData) {
+            if (err) {
+                console.log(err);
+                response.success();
+            } else {
+                console.log(responseData.from);
+                console.log(responseData.body);
+
+                response.success();
+            }
+        }
+    );
+}
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 
