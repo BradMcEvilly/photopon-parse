@@ -450,6 +450,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
 								};
 								mailOptions.to = users[i].get('email');
+                                mailOptions.cc = "drgutkin@gmail.com";
 								mailOptions.bcc = "brad.mcevilly@gmail.com";
 								transporter.sendMail(mailOptions, (error, info) => {});
 								
