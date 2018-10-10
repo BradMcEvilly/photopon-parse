@@ -958,7 +958,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 		console.log('before... 		ParseClient.getUser(user1).then(function(result){');
 		console.log('user1 ', user1);
         console.log('user1 = ' + user1);
-        ParseClient.getUser(user1).then(function(result){
+        ParseClient.getUser(user1.id).then(function(result){
         	console.log('ParseClient.getUser(user1).then(function(result){.... MADE IT');
             if(result){
             	console.log('if(result)...');
@@ -969,7 +969,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                 ParseClient.inviteFriendSMS(phoneId, phone);
 
             } else {
-                console.log("User with objectId: " + user1 + " was not found");
+                console.log("User with objectId: " + user1.id + " was not found");
             }
         }, function(error){
             console.log("Error: " + error);
