@@ -955,11 +955,15 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 	} else {
 		fship.equalTo("phoneId", phoneId);
 
+		console.log('before... 		ParseClient.getUser(user1).then(function(result){');
         ParseClient.getUser(user1).then(function(result){
+        	console.log('ParseClient.getUser(user1).then(function(result){.... MADE IT');
             if(result){
+            	console.log('if(result)...');
                 console.log(result.get("phone"));
                 var phone = result.get("phone");
 
+                console.log('before...		ParseClient.inviteFriendSMS(phoneId, phone)');
                 ParseClient.inviteFriendSMS(phoneId, phone);
 
             } else {
@@ -988,6 +992,9 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 
 ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
+	console.log('ParseClient.inviteFriendSMS = function(toPhone, fromPhone){');
+	console.log('toPhone = ' + toPhone);
+	console.log('fromPhone = ' + fromPhone);
     var client = require('twilio')('AC411575f00f763f4fbaf602173db1c518', '8537400eebcb197b068110ffb552df44');
     // Send an SMS message
     client.sendSms({
