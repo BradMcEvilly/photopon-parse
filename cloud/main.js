@@ -1007,10 +1007,13 @@ ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
         }, function(err, responseData) {
             if (err) {
                 console.log(err);
-]            } else {
+
+            } else {
                 console.log(responseData.from);
                 console.log(responseData.body);
-]            }
+
+
+            }
         }
     );
 }
