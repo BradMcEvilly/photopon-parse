@@ -1003,7 +1003,7 @@ ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
             to:toPhone,
             from: '+12015100525',
             url:'https://demo.twilio.com/welcome/sms/reply/',
-            body: 'Your friend at ' + fromPhone + ' sent you a gift using Photopon. To accept, download Photopon and verify your mobile number: https://itunes.apple.com/us/app/photopon-turn-your-photos/id545200032?mt=8'
+            body: 'Your friend at ' + fromPhone + ' sent you a gift using the Photopon app. To accept, download Photopon and verify your mobile number: https://tinyurl.com/y84z2fvd'
         }, function(err, responseData) {
             if (err) {
                 console.log(err);
