@@ -189,7 +189,8 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 
     query.first({useMasterKey: true}).then(function(user) {
 	   var password  = Math.random().toString(36).slice(-8);
-	  
+
+	   // test change
 	   user.set("password",password);
 	   user.set("isTempPassword",true);
 	   user.save(null, {
