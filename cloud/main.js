@@ -173,6 +173,7 @@ Parse.Cloud.define("getUserSessionToken", function(request, response) {
 	}).then(function(user){
 		console.log('**');
         console.log('**');
+
 		console.log('getUserSessionToken	.then...');
         console.log('logIn');
         console.log('**');
