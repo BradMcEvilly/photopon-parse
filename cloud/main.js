@@ -168,17 +168,33 @@ Parse.Cloud.define("getUserSessionToken", function(request, response) {
 
     query.first({useMasterKey: true}).then(function(user) {
 	    user.set("password", password);
+	    console.log('getUserSessionToken	query.first...');
 	    return user.save(null, {useMasterKey: true});
-
 	}).then(function(user){
+		console.log('**');
+        console.log('**');
+		console.log('getUserSessionToken	.then...');
+        console.log('logIn');
+        console.log('**');
+        console.log('**');
 	    return Parse.User.logIn(user.get("username"), password);
 	}).then(function(user){
+        console.log('**');
+        console.log('**');
+        console.log('getUserSessionToken	.then...');
+        console.log('response.success');
+        console.log('**');
+        console.log('**');
         console.log(user);
+        ParseClient.updateUndefinedFriendsWithUser(user);
 	    response.success(user.getSessionToken());
 
-	    ParseClient.updateUndefinedFriendsWithUser(user);
-
 	}).fail(function() {
+        console.log('**');
+        console.log('**');
+        console.log('getUserSessionToken	FAILED');
+        console.log('**');
+        console.log('**');
         response.error(arguments);
 	});
 
