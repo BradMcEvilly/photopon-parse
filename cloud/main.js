@@ -31,7 +31,7 @@ var transporter = nodemailer.createTransport({
     });
 
 var MailComposer = require('nodemailer/lib/mail-composer');
- 
+
  
 var path = require('path');
 var fs = require('fs');
@@ -102,10 +102,56 @@ ParseClient.getSuperUsers = function(){
     });
 
     return promise;
-}
+};
 
 ///
 
+// updates the "undefined" userID in friends collections using phoneID of new user
+ParseClient.updateUndefinedFriendsWithUser = function(user){
+	console.log("*");
+	console.log('updateUndefinedFriendsWithUser');
+    console.log("*");
+    console.log("user: ", user);
+
+    // get row with phoneID
+    var friends = new Parse.Query("Friends");
+    var phone = user.phone;
+    friends.equalTo("phoneId", phone);
+
+    friends.find({
+        success: function(friendsRows) {
+        	console.log('*');
+        	console.log('updateUndefinedFriendsWithUser		QUERY SUCCESS');
+			console.log('for...');
+			console.log('friendsRows.length: ' + friendsRows.length);
+            console.log('friendsRows' + friendsRows);
+            for (var j = 0; j < friendsRows.length; j++) {
+            	//console.log('for - i['+i+']');
+                console.log('friendsRows['+i+']');
+                console.log('friendsRow:', friendsRows[i]);
+                if(friendsRows[i].user2===undefined)
+                	console.log('friendsRow is undefined');
+
+            }
+
+        },
+        error: function(err) {
+        	console.log('*');
+			console.log('updateUndefinedFriendsWithUser		ERROR!');
+			console.log('*');
+			console.log('error:', err);
+        }
+	})
+
+
+
+
+
+	// check if undefined
+	// if undefined, update with userID
+
+    //var newUserPhoneID = '1' + request.object.get("phoneNumber");
+};
 
 Parse.Cloud.define("getUserSessionToken", function(request, response) {
 
@@ -128,8 +174,10 @@ Parse.Cloud.define("getUserSessionToken", function(request, response) {
 	    return Parse.User.logIn(user.get("username"), password);
 	}).then(function(user){
         console.log(user);
-		
 	    response.success(user.getSessionToken());
+
+	    ParseClient.updateUndefinedFriendsWithUser(user);
+
 	}).fail(function() {
         response.error(arguments);
 	});
@@ -908,7 +956,7 @@ Parse.Cloud.beforeSave("Verifications", function(request, response) {
 
 	var client = require('twilio')('AC411575f00f763f4fbaf602173db1c518', '8537400eebcb197b068110ffb552df44');
 
-	
+
 	// Send an SMS message
 	client.sendSms({
 	    to:'+1' + request.object.get("phoneNumber"),
