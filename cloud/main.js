@@ -118,30 +118,33 @@ ParseClient.updateUndefinedFriendsWithUser = function(user){
     var phone = user.phone;
     friends.equalTo("phoneId", phone);
 
-    friends.find({
-        success: function(friendsRows) {
-        	console.log('*');
-        	console.log('updateUndefinedFriendsWithUser		QUERY SUCCESS');
-			console.log('for...');
-			console.log('friendsRows.length: ' + friendsRows.length);
-            console.log('friendsRows' + friendsRows);
-            for (var j = 0; j < friendsRows.length; j++) {
-            	//console.log('for - i['+i+']');
-                console.log('friendsRows['+i+']');
-                console.log('friendsRow:', friendsRows[i]);
-                if(friendsRows[i].user2===undefined)
-                	console.log('friendsRow is undefined');
+    friends.find({useMasterKey: true}).then(function(friendsRows) {
 
-            }
+		console.log('*');
+		console.log('updateUndefinedFriendsWithUser		QUERY SUCCESS');
+		console.log('for...');
+		console.log('friendsRows.length: ' + friendsRows.length);
+		console.log('friendsRows' + friendsRows);
+		for (var j = 0; j < friendsRows.length; j++) {
+			//console.log('for - i['+i+']');
+			console.log('friendsRows['+j+']');
+			console.log('friendsRow:', friendsRows[j]);
+			if(friendsRows[j].user2===undefined)
+				console.log('friendsRow is undefined');
+			console.log('friendRows[].user2: ' + friendRows[j].user2);
+            console.log('friendRows[].phone: ' + friendRows[j].phone);
+            console.log('friendRows[].phoneId: ' + friendRows[j].phoneId);
+		}
 
-        },
+	});
+        /*,
         error: function(err) {
         	console.log('*');
 			console.log('updateUndefinedFriendsWithUser		ERROR!');
 			console.log('*');
 			console.log('error:', err);
-        }
-	})
+        }*/
+
 
 
 
