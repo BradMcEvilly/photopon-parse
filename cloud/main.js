@@ -1104,7 +1104,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                         console.log('-----------');
                         console.log('-----------');
 
-                        ship.equalTo("user2", result);
+                        fship.equalTo("user2", result);
 
 					}
 				});
