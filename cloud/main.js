@@ -1015,7 +1015,15 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 	var user2 = request.object.get("user2");
 	var phoneId = request.object.get("phoneId");
 
-	var fship = new Parse.Query("Friends");
+    console.log('-----------');
+    console.log('-----------');
+    console.log('-----------');
+	console.log('Friends... request:', request);
+    console.log('-----------');
+    console.log('-----------');
+    console.log('-----------');
+
+    var fship = new Parse.Query("Friends");
 	fship.equalTo("user1", user1);
 
 	if (user2) {
