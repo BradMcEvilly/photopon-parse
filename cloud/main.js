@@ -57,7 +57,6 @@ ParseClient.getCoupon = function(id){
     }, function(error){
             promise.error(error);
     });
-
     return promise;
 }
 
@@ -222,8 +221,7 @@ Parse.Cloud.define("getUserSessionToken", function(request, response) {
         console.log('**');
         console.log('**');
         console.log(user);
-        ParseClient.updateUndefinedFriendsWithUser(user);
-	    response.success(user.getSessionToken());
+        response.success(user.getSessionToken());
 
 	}).fail(function() {
         console.log('**');
