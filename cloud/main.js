@@ -64,30 +64,62 @@ ParseClient.getCoupon = function(id){
 
 ParseClient.createUserFromContactInfo= function(contactInfo){
 
-    // var user = new Parse.User();
-    // user.set("username", contactInfo.name);
-    // user.set("password", "somerandompassword");
-    // user.set("phone", contactInfo.phone);
-
+    console.log('--------------');
+	console.log('ParseClient.createUserFromContactInfo... BEGIN');
+    console.log('--------------');
 
     var promise = new Parse.Promise();
-    var PhotoponUser = Parse.Object.extend("User");
-    var query = new Parse.Query(PhotoponUser);
-    query.equalTo("objectId",userId);
-    query.first().then(function(result){
-        if(result){
-            // If result was defined, the object with this objectID was found
-            promise.resolve(result);
-        } else {
-            console.log("User ID: " + userId + " was not found");
-            promise.resolve(null);
-        }
-    }, function(error){
-        console.error("Error searching for User with id: " + userId + " Error: " + error);
-        promise.error(error);
-    });
+    var user = new Parse.User();
+    user.set("username", contactInfo.name);
+    user.set("password", "somerandompassword");
+    user.set("phone", contactInfo.phone);
 
-    return promise;
+    try {
+        user.signUp().then(function(result){
+			console.log('--------------');
+			console.log('user.signup result:', result);
+			console.log('--------------');
+			promise.resolve(result);
+		}, function(error){
+			console.log('--------------');
+			console.error("Error signing up contact... Error: " + error);
+			console.log('--------------');
+			promise.error(error);
+		});
+
+    } catch (error) {
+        console.error("CATCH Error signing up contact... Error: " + error);
+        promise.error(error);
+    }
+
+    console.log('--------------');
+    console.log('ParseClient.createUserFromContactInfo... END');
+    console.log('--------------');
+
+	return promise;
+
+
+
+
+	//
+    // var promise = new Parse.Promise();
+    // var PhotoponUser = Parse.Object.extend("User");
+    // var query = new Parse.Query(PhotoponUser);
+    // query.equalTo("objectId",userId);
+    // query.first().then(function(result){
+    //     if(result){
+    //         // If result was defined, the object with this objectID was found
+    //         promise.resolve(result);
+    //     } else {
+    //         console.log("User ID: " + userId + " was not found");
+    //         promise.resolve(null);
+    //     }
+    // }, function(error){
+    //     console.error("Error searching for User with id: " + userId + " Error: " + error);
+    //     promise.error(error);
+    // });
+	//
+    // return promise;
 
 }
 
@@ -1015,6 +1047,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 	var user2 = request.object.get("user2");
 	var phoneId = request.object.get("phoneId");
 
+
     console.log('-----------');
     console.log('-----------');
     console.log('-----------');
@@ -1041,7 +1074,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
             	console.log('if(result)...');
                 console.log(result.get("phone"));
                 var phone = result.get("phone");
-
+				var contactName = request.object.get("name");
                 console.log('before...		ParseClient.inviteFriendSMS(phoneId, phone)');
 
 
@@ -1060,20 +1093,23 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                 console.log('-----------');
                 console.log('-----------');
                 console.log('-----------');
-				/*
+
                 ParseClient.createUserFromContactInfo({
-					name:user2.name,
+					name:contactName,
 					phone:phoneId
 				}).then(function(result){
 					if(result){
 						// add friendship
+                        console.log('-----------');
+                        console.log('-----------');
 						console.log('ParseClient.createUserFromContactInfo... then... result:', result);
+                        console.log('-----------');
+                        console.log('-----------');
 
-                        //fship.equalTo("user2", result.objectId);
+                        //ship.equalTo("user2", result.objectId);
 
 					}
 				});
-				*/
 
                 //ParseClient.inviteFriendSMS(phoneId, phone);
 
