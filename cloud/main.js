@@ -1121,6 +1121,8 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                         console.log('-----------');
                         console.log('-----------');
 
+                        //
+						// try this
 						user2 = result.object.get("id");
 
                         fship.equalTo("user2", user2);
@@ -1148,7 +1150,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                 console.log("User with objectId: " + user1.id + " was not found");
             }
         }, function(error){
-            console.log("Error: " + error);
+            console.log("BEFORE SAVE FRIENDS - Error (OTHER): " + error);
         });
 	}
 });
