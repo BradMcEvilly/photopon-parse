@@ -60,7 +60,6 @@ ParseClient.getCoupon = function(id){
     return promise;
 }
 
-
 ParseClient.createUserFromContactInfo= function(contactInfo){
 
     console.log('--------------');
@@ -102,30 +101,6 @@ ParseClient.createUserFromContactInfo= function(contactInfo){
     console.log('--------------');
 
 	return promise;
-
-
-
-
-	//
-    // var promise = new Parse.Promise();
-    // var PhotoponUser = Parse.Object.extend("User");
-    // var query = new Parse.Query(PhotoponUser);
-    // query.equalTo("objectId",userId);
-    // query.first().then(function(result){
-    //     if(result){
-    //         // If result was defined, the object with this objectID was found
-    //         promise.resolve(result);
-    //     } else {
-    //         console.log("User ID: " + userId + " was not found");
-    //         promise.resolve(null);
-    //     }
-    // }, function(error){
-    //     console.error("Error searching for User with id: " + userId + " Error: " + error);
-    //     promise.error(error);
-    // });
-	//
-    // return promise;
-
 }
 
 ParseClient.getUser = function(userId) {
@@ -1082,105 +1057,45 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
         });
 
 	} else {
-		// if no user exists with that phone number, do the following
-		//fship.equalTo("phoneId", phoneId);
-
-		console.log('before... 		ParseClient.getUser(user1).then(function(result){');
-		console.log('user1 ', user1);
-        console.log('user1 = ' + user1);
         ParseClient.getUser(user1.id).then(function(result){
-        	console.log('ParseClient.getUser(user1).then(function(result){.... MADE IT');
-            if(result){
-            	console.log('if(result)...');
-                console.log(result.get("phone"));
+        	if(result){
                 var phone = result.get("phone");
 				var contactName = request.object.get("name");
-                console.log('before...		ParseClient.inviteFriendSMS(phoneId, phone)');
-
-                /* IN PROGRESS.....
-                 *
-                 *
-                 *
-                 */
 
                 // create new user given the phone number and contact name
-				console.log('-----------');
-                console.log('-----------');
-                console.log('-----------');
-				console.log('user2:', user2);
-                console.log('-----------');
-                console.log('-----------');
-                console.log('-----------');
-
                 ParseClient.createUserFromContactInfo({
 					name:contactName,
 					phone:phoneId
 				}).then(function(result){
 					if(result){
 						// add friendship
-
-                        console.log('-----------');
-                        console.log('-----------');
-						console.log('ParseClient.createUserFromContactInfo... then... result:', result);
-                        console.log('-----------');
-                        console.log('-----------');
-
-                        //
-						// try this
 						user2 = result;
-
-                        console.log('---->>>>>>>');
-                        console.log('---->>>>>>>');
-                        console.log('---->>>>>>>');
-						console.log('setting request object user2 - BEFORE');
                         request.object.set("user2", user2);
-                        console.log('setting request object user2 - AFTER');
-                        console.log('request.object.get(user2):', request.object.get("user2"));
-                        console.log('---->>>>>>>');
-                        console.log('---->>>>>>>');
-                        console.log('---->>>>>>>');
-
-                        console.log('-----------');
-						console.log('fship:', fship);
-                        console.log('-----------');
-
                         fship.equalTo("user2", user2);
-
-                        console.log('-----------');
-                        console.log('fship.find  BEFORE');
-                        console.log('-----------');
 
                         fship.find({
                             success: function(objects) {
-                                console.log('-----------------------');
-                                console.log('ParseClient.createUserFromContactInfo... then... fship.find 	SUCCESS');
-                                console.log('response:', response);
                                 if (objects.length > 0) {
-                                    console.log('ParseClient.createUserFromContactInfo... then... fship.find 	SUCCESS if(...');
                                     response.error("Friendship already exists");
                                 } else {
-                                    console.log('ParseClient.createUserFromContactInfo... then... fship.find 	SUCCESS else');
-                                	console.log('');
-
                                     response.success();
                                 }
-                                console.log('-----------------------');
                             },
                             error: function(error) {
-                                console.log('-----------------------');
-                                console.log('ParseClient.createUserFromContactInfo... then... fship.find 	ERROR:');
-                                console.log('-----------------------');
                                 response.error(error);
                             }
                         });
-                        console.log('fship.find		AFTER');
 					}
 				}, function(error){
 					console.log('ParseClient.createUserFromContactInfo... then ERROR:', error);
 				});
 
-                //ParseClient.inviteFriendSMS(phoneId, phone);
-
+                // Now we send the invite to the current user's friend
+                // NOTE: This is currently at risk of inviting contacts who are already on the platform
+				// - TO DO is to lookup contact via phone within the createUserFromContactInfo method and if
+				// - user exists, return that user object rather than create new one to return, then call this
+				// - method there instead of here.
+                ParseClient.inviteFriendSMS(phoneId, phone);
             } else {
                 console.log("User with objectId: " + user1.id + " was not found");
             }
@@ -1189,7 +1104,6 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
         });
 	}
 });
-
 
 ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
 	console.log('ParseClient.inviteFriendSMS = function(toPhone, fromPhone){');
