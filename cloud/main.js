@@ -1059,6 +1059,20 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
 	if (user2) {
 		fship.equalTo("user2", user2);
+
+        fship.find({
+            success: function(objects) {
+                if (objects.length > 0) {
+                    response.error("Friendship already exists");
+                } else {
+                    response.success();
+                }
+            },
+            error: function(error) {
+                response.error(error);
+            }
+        });
+
 	} else {
 		// if no user exists with that phone number, do the following
 		//fship.equalTo("phoneId", phoneId);
@@ -1074,8 +1088,6 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                 var phone = result.get("phone");
 				var contactName = request.object.get("name");
                 console.log('before...		ParseClient.inviteFriendSMS(phoneId, phone)');
-
-
 
                 /* IN PROGRESS.....
                  *
@@ -1106,7 +1118,21 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 
                         fship.equalTo("user2", result);
 
+                        fship.find({
+                            success: function(objects) {
+                                if (objects.length > 0) {
+                                    response.error("Friendship already exists");
+                                } else {
+                                    response.success();
+                                }
+                            },
+                            error: function(error) {
+                                response.error(error);
+                            }
+                        });
 					}
+				}, function(error){
+					console.log('ParseClient.createUserFromContactInfo... then ERROR:', error);
 				});
 
                 //ParseClient.inviteFriendSMS(phoneId, phone);
@@ -1117,21 +1143,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
         }, function(error){
             console.log("Error: " + error);
         });
-
 	}
-
-	fship.find({
-		success: function(objects) {
-			if (objects.length > 0) {
-				response.error("Friendship already exists");
-			} else {
-				response.success();
-			}
-		},
-		error: function(error) {
-			response.error(error);
-		}
-	});
 });
 
 
