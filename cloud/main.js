@@ -68,10 +68,12 @@ ParseClient.createUserFromContactInfo= function(contactInfo){
     console.log('--------------');
 
     var promise = new Parse.Promise();
-    var user = new Parse.User();
+    var PhotoponUser = Parse.Object.extend("User");
+    user = new PhotoponUser();
     user.set("username", contactInfo.name);
     user.set("password", "somerandompassword");
     user.set("phone", contactInfo.phone);
+
 
     try {
         user.signUp().then(function(result){
@@ -1040,6 +1042,8 @@ Parse.Cloud.beforeSave("Verifications", function(request, response) {
     //response.success();
 });
 
+
+
 Parse.Cloud.beforeSave("Friends", function(request, response) {
 	var user1 = request.object.get("user1");
 	var user2 = request.object.get("user2");
@@ -1110,13 +1114,16 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 				}).then(function(result){
 					if(result){
 						// add friendship
+
                         console.log('-----------');
                         console.log('-----------');
 						console.log('ParseClient.createUserFromContactInfo... then... result:', result);
                         console.log('-----------');
                         console.log('-----------');
 
-                        fship.equalTo("user2", result);
+						user2 = result.object.get("id");
+
+                        fship.equalTo("user2", user2);
 
                         fship.find({
                             success: function(objects) {
