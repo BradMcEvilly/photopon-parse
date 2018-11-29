@@ -1128,6 +1128,18 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                         //
 						// try this
 						user2 = result;
+
+                        console.log('---->>>>>>>');
+                        console.log('---->>>>>>>');
+                        console.log('---->>>>>>>');
+						console.log('setting request object user2 - BEFORE');
+                        request.object.set("user2", user2);
+                        console.log('setting request object user2 - AFTER');
+                        console.log('request.object.get(user2):', request.object.get("user2"));
+                        console.log('---->>>>>>>');
+                        console.log('---->>>>>>>');
+                        console.log('---->>>>>>>');
+
                         console.log('-----------');
 						console.log('fship:', fship);
                         console.log('-----------');
@@ -1149,6 +1161,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
                                 } else {
                                     console.log('ParseClient.createUserFromContactInfo... then... fship.find 	SUCCESS else');
                                 	console.log('');
+
                                     response.success();
                                 }
                                 console.log('-----------------------');
