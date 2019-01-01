@@ -100,8 +100,23 @@ ParseClient.createUserFromContactInfo= function(contactInfo){
     console.log('ParseClient.createUserFromContactInfo... END');
     console.log('--------------');
 
+    ParseClient.sendNewUserAddedEmail(contactInfo.phone);
+
 	return promise;
 }
+
+ParseClient.sendNewUserAddedEmail = function(phone){
+
+    var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>',
+        subject: 'Photopon - NEW USER ADDED!',
+        text: 'Dear Brad & Mike, \n\n A new user has been created on the Photopon Platform. \n\n Here is his/her mobile number: \n\n'+phone,
+        html: 'Dear Brad & Mike, <br><br> A new user has been created on the Photopon Platform <br><br> Here is his/her mobile number: <br><br><b>'+phone
+    };
+    mailOptions.to = "brad.mcevilly@gmail.com";
+    mailOptions.bcc = "drgutkin@gmail.com";
+    transporter.sendMail(mailOptions, (error, info) => {});
+};
 
 ParseClient.getUser = function(userId) {
     var promise = new Parse.Promise();
@@ -123,7 +138,7 @@ ParseClient.getUser = function(userId) {
     });
 
     return promise;
-}
+};
 
 ParseClient.getUserWithPhone = function(phone) {
     var promise = new Parse.Promise();
