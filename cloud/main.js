@@ -1253,8 +1253,8 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			var message = "";
 			if (notificationType == "PHOTOPON") {
 
-				message = "User " + assocUser.get("username") + " sent you Photopon!"
-				photoponId = request.object.get("assocPhotopon").id;
+				message = "User " + assocUser.get("username") + " sent you Photopon!";
+                photoponId = request.object.get("assocPhotopon").id;
 
 			} else if (notificationType == "MESSAGE") {
 				message = assocUser.get("username") + ": " + request.object.get("content");
@@ -1273,7 +1273,6 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 
 			}
 
-
 			Parse.Push.send({
 				channels: [ channelName ],
 				data: {
@@ -1285,10 +1284,15 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			}, {
 				useMasterKey: true,
 				success: function() {
-
+                    console.log('---------------');
+                    console.log('Notification successfully pushed');
+                    console.log('---------------');
 				},
 				error: function(error) {
 				// Handle error
+					console.log('---------------');
+					console.log('ERROR:', error);
+                    console.log('---------------');
 				}
 			});
 
@@ -1296,6 +1300,10 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 		},
 		error: function(error) {
 		// Handle error
+            console.log('---------------');
+            console.log('assocUser.fetch ERROR!');
+            console.log('ERROR INFO:', error);
+            console.log('---------------');
 		}
 	});
 
