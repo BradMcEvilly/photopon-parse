@@ -1241,7 +1241,7 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 	console.log('-----------------');
 	console.log('Parse.Cloud.afterSave	START');
     console.log('-----------------');
-    
+
 	var user = request.object.get("to");
 	var assocUser = request.object.get("assocUser");
 
