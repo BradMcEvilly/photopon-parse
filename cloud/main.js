@@ -266,11 +266,11 @@ Parse.Cloud.define("getMerchants", function(request, response) {
 
 Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 
+	console.log('*resetPhotoponUserClient');
     //Parse.Cloud.useMasterKey();
 
    var file = fs.readFileSync("/app/template/password_reset_email.html", "utf8");
    var template = _.template(file);
-
 
 
     var email = request.params.email;
