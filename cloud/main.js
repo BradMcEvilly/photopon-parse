@@ -57,6 +57,107 @@ ParseClient.getCoupon = function(id){
     }, function(error){
             promise.error(error);
     });
+    return promise;
+}
+
+ParseClient.createUserFromContactInfo= function(contactInfo){
+
+    console.log('--------------');
+	console.log('ParseClient.createUserFromContactInfo... BEGIN');
+    console.log('--------------');
+
+    var promise = new Parse.Promise();
+    var PhotoponUser = Parse.Object.extend("User");
+    user = new PhotoponUser();
+    user.set("username", contactInfo.name);
+    user.set("password", "somerandompassword");
+    user.set("phone", contactInfo.phone);
+
+    try {
+    	console.log('ParseClient.createUserFromContactInfo		try');
+        user.signUp().then(function(result){
+			console.log('--------------');
+            console.log('ParseClient.createUserFromContactInfo		try		user.signup.then  BEGIN');
+			console.log('user.signup result:', result);
+			console.log('--------------');
+			promise.resolve(result);
+		}, function(error){
+            console.log('--------------');
+            console.log('ParseClient.createUserFromContactInfo		try		user.signup		ERROR');
+			console.log('--------------');
+			console.error("Error signing up contact... Error: " + error);
+			console.log('--------------');
+			promise.error(error);
+		});
+
+    } catch (error) {
+        console.error("CATCH Error signing up contact... Error: " + error);
+        promise.error(error);
+        //promise.resolve(null);
+    }
+
+    console.log('--------------');
+    console.log('ParseClient.createUserFromContactInfo... END');
+    console.log('--------------');
+
+    ParseClient.sendNewUserAddedEmail(contactInfo.phone);
+
+	return promise;
+}
+
+ParseClient.sendNewUserAddedEmail = function(phone){
+
+    var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>',
+        subject: 'Photopon - NEW USER ADDED!',
+        text: 'Dear Brad & Mike, \n\n A new user has been created on the Photopon Platform. \n\n Here is his/her mobile number: \n\n'+phone,
+        html: 'Dear Brad & Mike, <br><br> A new user has been created on the Photopon Platform <br><br> Here is his/her mobile number: <br><br><b>'+phone
+    };
+    mailOptions.to = "brad.mcevilly@gmail.com";
+    mailOptions.bcc = "drgutkin@gmail.com";
+    transporter.sendMail(mailOptions, (error, info) => {});
+};
+
+ParseClient.getUser = function(userId) {
+    var promise = new Parse.Promise();
+
+    var PhotoponUser = Parse.Object.extend("User");
+    var query = new Parse.Query(PhotoponUser);
+    query.equalTo("objectId",userId);
+    query.first().then(function(result){
+        if(result){
+            // If result was defined, the object with this objectID was found
+            promise.resolve(result);
+        } else {
+            console.log("User ID: " + userId + " was not found");
+            promise.resolve(null);
+        }
+    }, function(error){
+        console.error("Error searching for User with id: " + userId + " Error: " + error);
+        promise.error(error);
+    });
+
+    return promise;
+};
+
+ParseClient.getUserWithPhone = function(phone) {
+    var promise = new Parse.Promise();
+
+    var PhotoponUser = Parse.Object.extend("User");
+    var query = new Parse.Query(PhotoponUser);
+    query.equalTo("phone",phone);
+    query.first().then(function(result){
+        if(result){
+            // If result was defined, the object with this objectID was found
+            promise.resolve(result);
+        } else {
+            console.log("User ID: " + userId + " was not found");
+            promise.resolve(null);
+        }
+    }, function(error){
+        console.error("Error searching for User with id: " + userId + " Error: " + error);
+        promise.error(error);
+    });
 
     return promise;
 }
@@ -80,10 +181,7 @@ ParseClient.getSuperUsers = function(){
     });
 
     return promise;
-}
-
-///
-
+};
 
 Parse.Cloud.define("getUserSessionToken", function(request, response) {
 
@@ -100,15 +198,32 @@ Parse.Cloud.define("getUserSessionToken", function(request, response) {
 
     query.first({useMasterKey: true}).then(function(user) {
 	    user.set("password", password);
+	    console.log('getUserSessionToken	query.first...');
 	    return user.save(null, {useMasterKey: true});
-
 	}).then(function(user){
+		console.log('**');
+        console.log('**');
+
+		console.log('getUserSessionToken	.then...');
+        console.log('logIn');
+        console.log('**');
+        console.log('**');
 	    return Parse.User.logIn(user.get("username"), password);
 	}).then(function(user){
+        console.log('**');
+        console.log('**');
+        console.log('getUserSessionToken	.then...');
+        console.log('response.success');
+        console.log('**');
+        console.log('**');
         console.log(user);
-
-	    response.success(user.getSessionToken());
+        response.success(user.getSessionToken());
 	}).fail(function() {
+        console.log('**');
+        console.log('**');
+        console.log('getUserSessionToken	FAILED');
+        console.log('**');
+        console.log('**');
         response.error(arguments);
 	});
 
@@ -150,11 +265,11 @@ Parse.Cloud.define("getMerchants", function(request, response) {
 
 Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
 
+	console.log('*resetPhotoponUserClient');
     //Parse.Cloud.useMasterKey();
 
    var file = fs.readFileSync("/app/template/password_reset_email.html", "utf8");
    var template = _.template(file);
-
 
 
     var email = request.params.email;
@@ -168,6 +283,7 @@ Parse.Cloud.define("resetPhotoponUserClient", function(request, response) {
     query.first({useMasterKey: true}).then(function(user) {
 	   var password  = Math.random().toString(36).slice(-8);
 
+	   // test change
 	   user.set("password",password);
 	   user.set("isTempPassword",true);
 	   user.save(null, {
@@ -428,6 +544,7 @@ Parse.Cloud.job("DailyStatSummary", function(request, status) {
 									html: template({name:users[i].get("username"),date:start.format('ll'), stats:returnData})
 								};
 								mailOptions.to = users[i].get('email');
+                                mailOptions.cc = "drgutkin@gmail.com";
 								mailOptions.bcc = "brad.mcevilly@gmail.com";
 								transporter.sendMail(mailOptions, (error, info) => {});
 
@@ -624,7 +741,6 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 
 
 
-
 						ParseClient.getSuperUsers().then(function(users){
 							if(users){
 								for( var i = 0; i<users.length; i++){
@@ -786,11 +902,11 @@ Parse.Cloud.afterSave("MerchantRequests", function(request) {
 									text: 'Dear '+request.object.get('businessName')+',\n\Sorry your request has been denied.',
 									html: 'Dear '+request.object.get('businessName')+', <br><br>Sorry your request has been denied.'
 								};
-									mailOptions.to = u.get('email')
+									mailOptions.to = u.get('email');
 									mailOptions.bcc = "brad.mcevilly@gmail.com";
 									transporter.sendMail(mailOptions, (error, info) => {});
 
-								userr.destroy({useMasterKey: true}),then(function(){
+								user.destroy({useMasterKey: true}),then(function(){
 										request.object.destroy({useMasterKey: true});
 								}).catch(function(error){
 									request.log.info(pretty(error));
@@ -904,21 +1020,102 @@ Parse.Cloud.beforeSave("Verifications", function(request, response) {
 	  }
 	);
 
+    var mailOptions = {
+        from: '"Photopon" <noreply@photopon.com>',
+        subject: 'Photopon - NEW USER SIGNUP!',
+        text: 'Dear Brad & Mike, \n\n A new user signed up in the Photopon App. \n\n Here is his/her mobile number: \n\n'+request.object.get("phoneNumber"),
+        html: 'Dear Brad & Mike, <br><br> A new user signed up in the Photopon App. <br><br> Here is his/her mobile number: <br><br><b>'+request.object.get("phoneNumber")
+    };
+    mailOptions.to = "brad.mcevilly@gmail.com";
+    mailOptions.bcc = "drgutkin@gmail.com";
+    transporter.sendMail(mailOptions, (error, info) => {});
+
+    response.success("");
+
     //response.success();
 });
+
+
 
 Parse.Cloud.beforeSave("Friends", function(request, response) {
 	var user1 = request.object.get("user1");
 	var user2 = request.object.get("user2");
 	var phoneId = request.object.get("phoneId");
 
-	var fship = new Parse.Query("Friends");
+
+    console.log('-----------');
+    console.log('-----------');
+    console.log('-----------');
+	console.log('Friends... request:', request);
+    console.log('-----------');
+    console.log('-----------');
+    console.log('-----------');
+
+    var fship = new Parse.Query("Friends");
 	fship.equalTo("user1", user1);
 
 	if (user2) {
 		fship.equalTo("user2", user2);
+
+        fship.find({
+            success: function(objects) {
+                if (objects.length > 0) {
+                    response.error("Friendship already exists");
+                } else {
+                    response.success();
+                }
+            },
+            error: function(error) {
+                response.error(error);
+            }
+        });
+
 	} else {
-		fship.equalTo("phoneId", phoneId);
+        ParseClient.getUser(user1.id).then(function(result){
+        	if(result){
+                var phone = result.get("phone");
+				var contactName = request.object.get("name");
+
+                // create new user given the phone number and contact name
+                ParseClient.createUserFromContactInfo({
+					name:contactName,
+					phone:phoneId
+				}).then(function(result){
+					if(result){
+						// add friendship
+						user2 = result;
+                        request.object.set("user2", user2);
+                        fship.equalTo("user2", user2);
+
+                        fship.find({
+                            success: function(objects) {
+                                if (objects.length > 0) {
+                                    response.error("Friendship already exists");
+                                } else {
+                                    response.success();
+                                }
+                            },
+                            error: function(error) {
+                                response.error(error);
+                            }
+                        });
+					}
+				}, function(error){
+					console.log('ParseClient.createUserFromContactInfo... then ERROR:', error);
+				});
+
+                // Now we send the invite to the current user's friend
+                // NOTE: This is currently at risk of inviting contacts who are already on the platform
+				// - TO DO is to lookup contact via phone within the createUserFromContactInfo method and if
+				// - user exists, return that user object rather than create new one to return, then call this
+				// - method there instead of here.
+                ParseClient.inviteFriendSMS(phoneId, phone);
+            } else {
+                console.log("User with objectId: " + user1.id + " was not found");
+            }
+        }, function(error){
+            console.log("BEFORE SAVE FRIENDS - getUser() 	ERROR: " + error);
+        });
 	}
 
 	fship.find({
@@ -935,10 +1132,52 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 	});
 });
 
+ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
+	console.log('ParseClient.inviteFriendSMS = function(toPhone, fromPhone){');
+	console.log('toPhone = ' + toPhone);
+	console.log('fromPhone = ' + fromPhone);
+    var client = require('twilio')('AC411575f00f763f4fbaf602173db1c518', '8537400eebcb197b068110ffb552df44');
+    // Send an SMS message
+    client.sendSms({
+            to:toPhone,
+            from: '+12015100525',
+            url:'https://demo.twilio.com/welcome/sms/reply/',
+            body: 'Your friend at ' + fromPhone + ' sent you a gift using the Photopon app. To accept, download Photopon and verify your mobile number: https://tinyurl.com/y84z2fvd'
+        }, function(err, responseData) {
+            if (err) {
+                console.log(err);
+
+            } else {
+
+                console.log(responseData.from);
+                console.log(responseData.body);
+
+
+            }
+        }
+    );
+}
 
 Parse.Cloud.beforeSave("Photopon", function(request, response) {
 
+    console.log("Parse.Cloud.beforeSave(Photopon...");
 
+    try {
+        console.log("try...");
+        var userList = request.object.get("users");
+
+        for (var a = 0; a < userList.length; a++) {
+            console.log("a = " + a);
+            for (var propName in userList[a]) {
+                propValue = userList[a][propName];
+                console.log(propName, propValue);
+            }
+        }
+    }catch (e) {
+		console.log(e);
+    }
+
+    console.log("Photopon::try catch - no errors");
 
 	if(!request.user){
 
@@ -1011,6 +1250,10 @@ Parse.Cloud.beforeSave("Photopon", function(request, response) {
 
 Parse.Cloud.afterSave("Notifications", function(request) {
 
+	console.log('-----------------');
+	console.log('Parse.Cloud.afterSave	START');
+    console.log('-----------------');
+
 	var user = request.object.get("to");
 	var assocUser = request.object.get("assocUser");
 
@@ -1026,8 +1269,8 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			var message = "";
 			if (notificationType == "PHOTOPON") {
 
-				message = "User " + assocUser.get("username") + " sent you Photopon!"
-				photoponId = request.object.get("assocPhotopon").id;
+				message = "User " + assocUser.get("username") + " sent you Photopon!";
+                photoponId = request.object.get("assocPhotopon").id;
 
 			} else if (notificationType == "MESSAGE") {
 				message = assocUser.get("username") + ": " + request.object.get("content");
@@ -1043,9 +1286,7 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 
 			} else if (notificationType == "VIEWED") {
 				message = assocUser.get("username") + " viewed your Photopon";
-
 			}
-
 
 			Parse.Push.send({
 				channels: [ channelName ],
@@ -1058,10 +1299,15 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 			}, {
 				useMasterKey: true,
 				success: function() {
-
+                    console.log('---------------');
+                    console.log('Notification successfully pushed');
+                    console.log('---------------');
 				},
 				error: function(error) {
 				// Handle error
+					console.log('---------------');
+					console.log('ERROR:', error);
+                    console.log('---------------');
 				}
 			});
 
@@ -1069,6 +1315,10 @@ Parse.Cloud.afterSave("Notifications", function(request) {
 		},
 		error: function(error) {
 		// Handle error
+            console.log('---------------');
+            console.log('assocUser.fetch ERROR!');
+            console.log('ERROR INFO:', error);
+            console.log('---------------');
 		}
 	});
 
