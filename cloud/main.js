@@ -1118,6 +1118,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
         });
 	}
 
+	/*
 	fship.find({
 		success: function(objects) {
 			if (objects.length > 0) {
@@ -1130,6 +1131,7 @@ Parse.Cloud.beforeSave("Friends", function(request, response) {
 			response.error(error);
 		}
 	});
+	*/
 });
 
 ParseClient.inviteFriendSMS = function(toPhone, fromPhone){
